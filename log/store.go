@@ -88,3 +88,7 @@ func (s *store) Close() error {
 	}
 	return s.file.Close()
 }
+
+func (s *store) Name() string {
+	return s.file.Name()
+}

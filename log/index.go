@@ -21,7 +21,7 @@ type (
 	}
 )
 
-func newIndex(f *os.File, maxIndexBytes int) (*index, error) {
+func newIndex(f *os.File, maxIndexBytes int64) (*index, error) {
 	idx := &index{
 		file: f,
 	}
@@ -30,7 +30,7 @@ func newIndex(f *os.File, maxIndexBytes int) (*index, error) {
 		return nil, err
 	}
 	idx.size = uint64(fi.Size())
-	if err := os.Truncate(f.Name(), int64(maxIndexBytes)); err != nil {
+	if err := os.Truncate(f.Name(), maxIndexBytes); err != nil {
 		return nil, err
 	}
 
