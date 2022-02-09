@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
 	api "github.com/mohitkumar/finch/api/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 var _ raft.FSM = (*fsm)(nil)
@@ -18,7 +18,30 @@ type fsm struct {
 }
 
 func (l *fsm) Apply(record *raft.Log) interface{} {
+	data := record.Data
+	reqType := RequestType(data[0])
+
+	switch reqType {
+	case PutRequestType:
+		item := &api.KVItem{}
+		if err := proto.Unmarshal(data[1:], item); err != nil {
+			return err
+		}
+		return l.applyPut(item.Key, item.Value)
+	case DeleteRequestType:
+		return l.applyDelete(data[1:])
+	}
 	return nil
+}
+
+func (f *fsm) applyPut(key []byte, value []byte) error {
+	f.logger.Printf("put key=%s,value=%s\n", string(key), string(value))
+	return f.kvstore.Put(key, value)
+}
+
+func (f *fsm) applyDelete(key []byte) error {
+	f.logger.Printf("delete key %s \n", string(key))
+	return f.kvstore.Delete(key)
 }
 
 func (f *fsm) Snapshot() (raft.FSMSnapshot, error) {
@@ -33,7 +56,6 @@ func (f *fsm) Restore(r io.ReadCloser) error {
 
 	var (
 		readBuf  []byte
-		protoBuf *proto.Buffer
 		err      error
 		keyCount int = 0
 	)
@@ -45,15 +67,11 @@ func (f *fsm) Restore(r io.ReadCloser) error {
 		return err
 	}
 
-	protoBuf = proto.NewBuffer(readBuf)
-
-	f.logger.Printf("new protoBuf length %d bytes", len(protoBuf.Bytes()))
-
 	// decode messages from 1M block file
 	// the last message could decode failed with io.ErrUnexpectedEOF
 	for {
 		item := &api.KVItem{}
-		if err = protoBuf.DecodeMessage(item); err == io.ErrUnexpectedEOF {
+		if err = proto.Unmarshal(readBuf, item); err == io.ErrUnexpectedEOF {
 			break
 		}
 		if err != nil {

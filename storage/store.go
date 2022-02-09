@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/dgraph-io/badger/v3"
-	"github.com/golang/protobuf/proto"
 	api "github.com/mohitkumar/finch/api/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 type KVStore interface {
@@ -28,6 +28,13 @@ type kvStoreImpl struct {
 type dbReader struct {
 	it *badger.Iterator
 }
+
+type RequestType uint8
+
+const (
+	PutRequestType    RequestType = 0
+	DeleteRequestType RequestType = 1
+)
 
 var _ KVStore = (*kvStoreImpl)(nil)
 
@@ -110,9 +117,11 @@ func (o *dbReader) Read(p []byte) (int, error) {
 		Key:   k,
 		Value: v,
 	}
-	buff := proto.NewBuffer([]byte{})
-	buff.EncodeMessage(kvi)
-	n := copy(p, buff.Bytes())
+	buff, err := proto.Marshal(kvi)
+	if err != nil {
+		return 0, err
+	}
+	n := copy(p, buff)
 	o.it.Next()
 	return n, nil
 }
