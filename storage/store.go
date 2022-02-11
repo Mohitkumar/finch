@@ -29,13 +29,6 @@ type dbReader struct {
 	it *badger.Iterator
 }
 
-type RequestType uint8
-
-const (
-	PutRequestType    RequestType = 0
-	DeleteRequestType RequestType = 1
-)
-
 var _ KVStore = (*kvStoreImpl)(nil)
 
 func NewStore(conf Config) *kvStoreImpl {

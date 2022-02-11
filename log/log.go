@@ -1,6 +1,7 @@
 package log
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -17,6 +18,7 @@ type (
 		Append(record *api.LogRecord) (uint64, error)
 		Read(offset uint64) (*api.LogRecord, error)
 		Close() error
+		Reader() io.Reader
 	}
 
 	logImpl struct {
@@ -135,4 +137,25 @@ func (l *logImpl) Reset() error {
 		return err
 	}
 	return l.setup()
+}
+
+func (l *logImpl) Reader() io.Reader {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	readers := make([]io.Reader, len(l.segments))
+	for i, segment := range l.segments {
+		readers[i] = &originReader{segment.store, 0}
+	}
+	return io.MultiReader(readers...)
+}
+
+type originReader struct {
+	*store
+	off int64
+}
+
+func (o *originReader) Read(p []byte) (int, error) {
+	n, err := o.ReadAt(p, o.off)
+	o.off += int64(n)
+	return n, err
 }

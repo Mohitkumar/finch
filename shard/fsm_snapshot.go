@@ -1,4 +1,4 @@
-package storage
+package shard
 
 import (
 	"io"
@@ -9,15 +9,20 @@ import (
 var _ raft.FSMSnapshot = (*fsmSnapshot)(nil)
 
 type fsmSnapshot struct {
-	reader io.ReadCloser
+	dbReader  io.ReadCloser
+	logReader io.Reader
 }
 
 func (f *fsmSnapshot) Persist(sink raft.SnapshotSink) error {
-	if _, err := io.Copy(sink, f.reader); err != nil {
+	if _, err := io.Copy(sink, f.dbReader); err != nil {
 		_ = sink.Cancel()
 		return err
 	}
-	if err := f.reader.Close(); err != nil {
+	if err := f.dbReader.Close(); err != nil {
+		return err
+	}
+	if _, err := io.Copy(sink, f.logReader); err != nil {
+		_ = sink.Cancel()
 		return err
 	}
 	return sink.Close()

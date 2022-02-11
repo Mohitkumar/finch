@@ -9,6 +9,13 @@ import (
 	"github.com/mohitkumar/finch/storage"
 )
 
+type RequestType uint8
+
+const (
+	PutRequestType    RequestType = 0
+	DeleteRequestType RequestType = 1
+)
+
 type Shard struct {
 	ID      string
 	config  Config
@@ -57,10 +64,6 @@ func (shard *Shard) setupStorage() {
 		Dir: shard.dataDir,
 	}
 	shard.kvStore = storage.NewStore(config)
-}
-
-func (shard *Shard) setupRaft() error {
-
 }
 
 func (shard *Shard) CreateQueue(name string) error {
