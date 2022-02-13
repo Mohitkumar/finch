@@ -106,11 +106,12 @@ func (o *dbReader) Read(p []byte) (int, error) {
 	k := item.Key()
 	v := make([]byte, item.ValueSize())
 	item.ValueCopy(v)
-	kvi := &api.SnapShotItem_KVItem{
+	kvItem := &api.KVItem{
 		Key:   k,
 		Value: v,
 	}
-	buff, err := proto.Marshal(kvi)
+
+	buff, err := proto.Marshal(kvItem)
 	if err != nil {
 		return 0, err
 	}

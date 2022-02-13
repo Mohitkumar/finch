@@ -12,8 +12,9 @@ import (
 type RequestType uint8
 
 const (
-	PutRequestType    RequestType = 0
-	DeleteRequestType RequestType = 1
+	DBPutRequestType     RequestType = 0
+	DBDeleteRequestType  RequestType = 1
+	LogAppendRequestType RequestType = 2
 )
 
 type Shard struct {

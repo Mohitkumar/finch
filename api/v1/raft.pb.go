@@ -25,19 +25,17 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-type SnapShotItem struct {
+type LogItem struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Types that are assignable to Item:
-	//	*SnapShotItem_KvItem
-	//	*SnapShotItem_LogItem_
-	Item isSnapShotItem_Item `protobuf_oneof:"Item"`
+	QueueName string     `protobuf:"bytes,1,opt,name=queueName,proto3" json:"queueName,omitempty"`
+	LogRecord *LogRecord `protobuf:"bytes,2,opt,name=logRecord,proto3" json:"logRecord,omitempty"`
 }
 
-func (x *SnapShotItem) Reset() {
-	*x = SnapShotItem{}
+func (x *LogItem) Reset() {
+	*x = LogItem{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_v1_raft_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -45,13 +43,13 @@ func (x *SnapShotItem) Reset() {
 	}
 }
 
-func (x *SnapShotItem) String() string {
+func (x *LogItem) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SnapShotItem) ProtoMessage() {}
+func (*LogItem) ProtoMessage() {}
 
-func (x *SnapShotItem) ProtoReflect() protoreflect.Message {
+func (x *LogItem) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_raft_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -63,59 +61,38 @@ func (x *SnapShotItem) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SnapShotItem.ProtoReflect.Descriptor instead.
-func (*SnapShotItem) Descriptor() ([]byte, []int) {
+// Deprecated: Use LogItem.ProtoReflect.Descriptor instead.
+func (*LogItem) Descriptor() ([]byte, []int) {
 	return file_api_v1_raft_proto_rawDescGZIP(), []int{0}
 }
 
-func (m *SnapShotItem) GetItem() isSnapShotItem_Item {
-	if m != nil {
-		return m.Item
+func (x *LogItem) GetQueueName() string {
+	if x != nil {
+		return x.QueueName
+	}
+	return ""
+}
+
+func (x *LogItem) GetLogRecord() *LogRecord {
+	if x != nil {
+		return x.LogRecord
 	}
 	return nil
 }
 
-func (x *SnapShotItem) GetKvItem() *SnapShotItem_KVItem {
-	if x, ok := x.GetItem().(*SnapShotItem_KvItem); ok {
-		return x.KvItem
-	}
-	return nil
-}
-
-func (x *SnapShotItem) GetLogItem() *SnapShotItem_LogItem {
-	if x, ok := x.GetItem().(*SnapShotItem_LogItem_); ok {
-		return x.LogItem
-	}
-	return nil
-}
-
-type isSnapShotItem_Item interface {
-	isSnapShotItem_Item()
-}
-
-type SnapShotItem_KvItem struct {
-	KvItem *SnapShotItem_KVItem `protobuf:"bytes,3,opt,name=kvItem,proto3,oneof"`
-}
-
-type SnapShotItem_LogItem_ struct {
-	LogItem *SnapShotItem_LogItem `protobuf:"bytes,4,opt,name=logItem,proto3,oneof"`
-}
-
-func (*SnapShotItem_KvItem) isSnapShotItem_Item() {}
-
-func (*SnapShotItem_LogItem_) isSnapShotItem_Item() {}
-
-type SnapShotItem_KVItem struct {
+type DataRecord struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Key   []byte `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value []byte `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// Types that are assignable to Record:
+	//	*DataRecord_KvItem
+	//	*DataRecord_LogItem
+	Record isDataRecord_Record `protobuf_oneof:"Record"`
 }
 
-func (x *SnapShotItem_KVItem) Reset() {
-	*x = SnapShotItem_KVItem{}
+func (x *DataRecord) Reset() {
+	*x = DataRecord{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_v1_raft_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -123,13 +100,13 @@ func (x *SnapShotItem_KVItem) Reset() {
 	}
 }
 
-func (x *SnapShotItem_KVItem) String() string {
+func (x *DataRecord) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SnapShotItem_KVItem) ProtoMessage() {}
+func (*DataRecord) ProtoMessage() {}
 
-func (x *SnapShotItem_KVItem) ProtoReflect() protoreflect.Message {
+func (x *DataRecord) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_raft_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -141,102 +118,69 @@ func (x *SnapShotItem_KVItem) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SnapShotItem_KVItem.ProtoReflect.Descriptor instead.
-func (*SnapShotItem_KVItem) Descriptor() ([]byte, []int) {
-	return file_api_v1_raft_proto_rawDescGZIP(), []int{0, 0}
+// Deprecated: Use DataRecord.ProtoReflect.Descriptor instead.
+func (*DataRecord) Descriptor() ([]byte, []int) {
+	return file_api_v1_raft_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SnapShotItem_KVItem) GetKey() []byte {
-	if x != nil {
-		return x.Key
+func (m *DataRecord) GetRecord() isDataRecord_Record {
+	if m != nil {
+		return m.Record
 	}
 	return nil
 }
 
-func (x *SnapShotItem_KVItem) GetValue() []byte {
-	if x != nil {
-		return x.Value
+func (x *DataRecord) GetKvItem() *KVItem {
+	if x, ok := x.GetRecord().(*DataRecord_KvItem); ok {
+		return x.KvItem
 	}
 	return nil
 }
 
-type SnapShotItem_LogItem struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	QueueName string `protobuf:"bytes,1,opt,name=queueName,proto3" json:"queueName,omitempty"`
-	LogRecord []byte `protobuf:"bytes,2,opt,name=logRecord,proto3" json:"logRecord,omitempty"`
-}
-
-func (x *SnapShotItem_LogItem) Reset() {
-	*x = SnapShotItem_LogItem{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_api_v1_raft_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SnapShotItem_LogItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SnapShotItem_LogItem) ProtoMessage() {}
-
-func (x *SnapShotItem_LogItem) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_raft_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SnapShotItem_LogItem.ProtoReflect.Descriptor instead.
-func (*SnapShotItem_LogItem) Descriptor() ([]byte, []int) {
-	return file_api_v1_raft_proto_rawDescGZIP(), []int{0, 1}
-}
-
-func (x *SnapShotItem_LogItem) GetQueueName() string {
-	if x != nil {
-		return x.QueueName
-	}
-	return ""
-}
-
-func (x *SnapShotItem_LogItem) GetLogRecord() []byte {
-	if x != nil {
-		return x.LogRecord
+func (x *DataRecord) GetLogItem() *LogItem {
+	if x, ok := x.GetRecord().(*DataRecord_LogItem); ok {
+		return x.LogItem
 	}
 	return nil
 }
+
+type isDataRecord_Record interface {
+	isDataRecord_Record()
+}
+
+type DataRecord_KvItem struct {
+	KvItem *KVItem `protobuf:"bytes,1,opt,name=kvItem,proto3,oneof"`
+}
+
+type DataRecord_LogItem struct {
+	LogItem *LogItem `protobuf:"bytes,2,opt,name=logItem,proto3,oneof"`
+}
+
+func (*DataRecord_KvItem) isDataRecord_Record() {}
+
+func (*DataRecord_LogItem) isDataRecord_Record() {}
 
 var File_api_v1_raft_proto protoreflect.FileDescriptor
 
 var file_api_v1_raft_proto_rawDesc = []byte{
 	0x0a, 0x11, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x61, 0x66, 0x74, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x22, 0xf2, 0x01, 0x0a, 0x0c, 0x53, 0x6e, 0x61, 0x70, 0x53, 0x68, 0x6f, 0x74,
-	0x49, 0x74, 0x65, 0x6d, 0x12, 0x2e, 0x0a, 0x06, 0x6b, 0x76, 0x49, 0x74, 0x65, 0x6d, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x53, 0x6e, 0x61, 0x70, 0x53, 0x68, 0x6f, 0x74, 0x49,
-	0x74, 0x65, 0x6d, 0x2e, 0x4b, 0x56, 0x49, 0x74, 0x65, 0x6d, 0x48, 0x00, 0x52, 0x06, 0x6b, 0x76,
-	0x49, 0x74, 0x65, 0x6d, 0x12, 0x31, 0x0a, 0x07, 0x6c, 0x6f, 0x67, 0x49, 0x74, 0x65, 0x6d, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x53, 0x6e, 0x61, 0x70, 0x53, 0x68, 0x6f, 0x74,
-	0x49, 0x74, 0x65, 0x6d, 0x2e, 0x4c, 0x6f, 0x67, 0x49, 0x74, 0x65, 0x6d, 0x48, 0x00, 0x52, 0x07,
-	0x6c, 0x6f, 0x67, 0x49, 0x74, 0x65, 0x6d, 0x1a, 0x30, 0x0a, 0x06, 0x4b, 0x56, 0x49, 0x74, 0x65,
-	0x6d, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03,
-	0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x1a, 0x45, 0x0a, 0x07, 0x4c, 0x6f, 0x67,
+	0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x6f, 0x72,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x10, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
+	0x6c, 0x6f, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x51, 0x0a, 0x07, 0x4c, 0x6f, 0x67,
 	0x49, 0x74, 0x65, 0x6d, 0x12, 0x1c, 0x0a, 0x09, 0x71, 0x75, 0x65, 0x75, 0x65, 0x4e, 0x61, 0x6d,
 	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x71, 0x75, 0x65, 0x75, 0x65, 0x4e, 0x61,
-	0x6d, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x6f, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x09, 0x6c, 0x6f, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x42, 0x06, 0x0a, 0x04, 0x49, 0x74, 0x65, 0x6d, 0x42, 0x1e, 0x5a, 0x1c, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x6f, 0x68, 0x69, 0x74, 0x6b, 0x75, 0x6d, 0x61,
-	0x72, 0x2f, 0x61, 0x70, 0x69, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6d, 0x65, 0x12, 0x28, 0x0a, 0x09, 0x6c, 0x6f, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x52, 0x09, 0x6c, 0x6f, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x5f, 0x0a, 0x0a,
+	0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x21, 0x0a, 0x06, 0x6b, 0x76,
+	0x49, 0x74, 0x65, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x4b, 0x56, 0x49,
+	0x74, 0x65, 0x6d, 0x48, 0x00, 0x52, 0x06, 0x6b, 0x76, 0x49, 0x74, 0x65, 0x6d, 0x12, 0x24, 0x0a,
+	0x07, 0x6c, 0x6f, 0x67, 0x49, 0x74, 0x65, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08,
+	0x2e, 0x4c, 0x6f, 0x67, 0x49, 0x74, 0x65, 0x6d, 0x48, 0x00, 0x52, 0x07, 0x6c, 0x6f, 0x67, 0x49,
+	0x74, 0x65, 0x6d, 0x42, 0x08, 0x0a, 0x06, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x1e, 0x5a,
+	0x1c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x6f, 0x68, 0x69,
+	0x74, 0x6b, 0x75, 0x6d, 0x61, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -251,20 +195,22 @@ func file_api_v1_raft_proto_rawDescGZIP() []byte {
 	return file_api_v1_raft_proto_rawDescData
 }
 
-var file_api_v1_raft_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_v1_raft_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_api_v1_raft_proto_goTypes = []interface{}{
-	(*SnapShotItem)(nil),         // 0: SnapShotItem
-	(*SnapShotItem_KVItem)(nil),  // 1: SnapShotItem.KVItem
-	(*SnapShotItem_LogItem)(nil), // 2: SnapShotItem.LogItem
+	(*LogItem)(nil),    // 0: LogItem
+	(*DataRecord)(nil), // 1: DataRecord
+	(*LogRecord)(nil),  // 2: LogRecord
+	(*KVItem)(nil),     // 3: KVItem
 }
 var file_api_v1_raft_proto_depIdxs = []int32{
-	1, // 0: SnapShotItem.kvItem:type_name -> SnapShotItem.KVItem
-	2, // 1: SnapShotItem.logItem:type_name -> SnapShotItem.LogItem
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: LogItem.logRecord:type_name -> LogRecord
+	3, // 1: DataRecord.kvItem:type_name -> KVItem
+	0, // 2: DataRecord.logItem:type_name -> LogItem
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_raft_proto_init() }
@@ -272,9 +218,11 @@ func file_api_v1_raft_proto_init() {
 	if File_api_v1_raft_proto != nil {
 		return
 	}
+	file_api_v1_store_proto_init()
+	file_api_v1_log_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_api_v1_raft_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SnapShotItem); i {
+			switch v := v.(*LogItem); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -286,19 +234,7 @@ func file_api_v1_raft_proto_init() {
 			}
 		}
 		file_api_v1_raft_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SnapShotItem_KVItem); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_api_v1_raft_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SnapShotItem_LogItem); i {
+			switch v := v.(*DataRecord); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -310,9 +246,9 @@ func file_api_v1_raft_proto_init() {
 			}
 		}
 	}
-	file_api_v1_raft_proto_msgTypes[0].OneofWrappers = []interface{}{
-		(*SnapShotItem_KvItem)(nil),
-		(*SnapShotItem_LogItem_)(nil),
+	file_api_v1_raft_proto_msgTypes[1].OneofWrappers = []interface{}{
+		(*DataRecord_KvItem)(nil),
+		(*DataRecord_LogItem)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -320,7 +256,7 @@ func file_api_v1_raft_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_v1_raft_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -23,16 +23,30 @@ func (l *fsm) Apply(record *raft.Log) interface{} {
 	reqType := RequestType(data[0])
 
 	switch reqType {
-	case PutRequestType:
+	case DBPutRequestType:
 		item := &api.KVItem{}
 		if err := proto.Unmarshal(data[1:], item); err != nil {
 			return err
 		}
 		return l.applyPut(item.Key, item.Value)
-	case DeleteRequestType:
+	case DBDeleteRequestType:
 		return l.applyDelete(data[1:])
+	case LogAppendRequestType:
+		item := &api.LogItem{}
+		if err := proto.Unmarshal(data[1:], item); err != nil {
+			return err
+		}
+		return l.applyAppend(item.QueueName, item.LogRecord)
 	}
 	return nil
+}
+
+func (f *fsm) applyAppend(queueName string, record *api.LogRecord) interface{} {
+	offset, err := f.queues[queueName].Append(record)
+	if err != nil {
+		return err
+	}
+	return &api.ProduceResponse{Offset: offset}
 }
 
 func (f *fsm) applyPut(key []byte, value []byte) error {
@@ -65,23 +79,20 @@ func (f *fsm) Restore(r io.ReadCloser) error {
 	}
 	var i uint64 = 0
 	for {
-		snapshotItem := &api.SnapShotItem{}
-		if err = proto.Unmarshal(readBuf, snapshotItem); err == io.ErrUnexpectedEOF {
+		dataRecord := &api.DataRecord{}
+		if err = proto.Unmarshal(readBuf, dataRecord); err == io.ErrUnexpectedEOF {
 			break
 		}
 		if err != nil {
 			return err
 		}
 
-		switch item := snapshotItem.Item.(type) {
-		case *api.SnapShotItem_KvItem:
+		switch item := dataRecord.Record.(type) {
+		case *api.DataRecord_KvItem:
 			f.kvStore.Put(item.KvItem.Key, item.KvItem.Value)
-		case *api.SnapShotItem_LogItem_:
+		case *api.DataRecord_LogItem:
 			queuName := item.LogItem.QueueName
-			record := &api.LogRecord{}
-			if err = proto.Unmarshal(item.LogItem.LogRecord, record); err != nil {
-				return err
-			}
+			record := item.LogItem.LogRecord
 			log := f.queues[queuName]
 			if i == 0 {
 				log.GetConfig().Segment.InitialOffset = record.Offset

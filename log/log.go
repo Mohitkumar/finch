@@ -167,9 +167,14 @@ func (o *originReader) Read(p []byte) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	logItem := &api.SnapShotItem_LogItem{
+	record := &api.LogRecord{}
+	err = proto.Unmarshal(data, record)
+	if err != nil {
+		return 0, err
+	}
+	logItem := &api.LogItem{
 		QueueName: o.name,
-		LogRecord: data,
+		LogRecord: record,
 	}
 	buff, err := proto.Marshal(logItem)
 	if err != nil {

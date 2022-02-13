@@ -2,20 +2,18 @@ syntax = "proto3";
 
 option go_package="github.com/mohitkumar/api_v1";
 
-message SnapShotItem{
-    message KVItem{
-        bytes key =1;
-        bytes value=2;
-    }
+import "api/v1/store.proto";
+import "api/v1/log.proto";
 
-    message LogItem{
-        string queueName = 1;
-        bytes logRecord = 2;
-    }
-
-    oneof Item{
-        KVItem kvItem = 3;
-        LogItem logItem = 4;
+message LogItem{
+    string queueName =1;
+    LogRecord logRecord = 2;
+}
+message DataRecord{
+    oneof Record{
+        KVItem kvItem = 1;
+        LogItem logItem = 2;
     }
 }
+
 
