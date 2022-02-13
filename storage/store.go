@@ -106,7 +106,7 @@ func (o *dbReader) Read(p []byte) (int, error) {
 	k := item.Key()
 	v := make([]byte, item.ValueSize())
 	item.ValueCopy(v)
-	kvi := &api.KVItem{
+	kvi := &api.SnapShotItem_KVItem{
 		Key:   k,
 		Value: v,
 	}

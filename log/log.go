@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	api "github.com/mohitkumar/finch/api/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 type (
@@ -18,7 +19,10 @@ type (
 		Append(record *api.LogRecord) (uint64, error)
 		Read(offset uint64) (*api.LogRecord, error)
 		Close() error
-		Reader() io.Reader
+		Reader(withName string) io.Reader
+		GetConfig() *Config
+		Reset() error
+		Remove() error
 	}
 
 	logImpl struct {
@@ -46,6 +50,9 @@ func NewLog(dir string, c Config) (Log, error) {
 	return l, l.setup()
 }
 
+func (log *logImpl) GetConfig() *Config {
+	return &log.Config
+}
 func (log *logImpl) setup() error {
 	files, err := ioutil.ReadDir(log.Dir)
 	if err != nil {
@@ -139,23 +146,36 @@ func (l *logImpl) Reset() error {
 	return l.setup()
 }
 
-func (l *logImpl) Reader() io.Reader {
+func (l *logImpl) Reader(withName string) io.Reader {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
 	readers := make([]io.Reader, len(l.segments))
 	for i, segment := range l.segments {
-		readers[i] = &originReader{segment.store, 0}
+		readers[i] = &originReader{withName, segment.store, 0}
 	}
 	return io.MultiReader(readers...)
 }
 
 type originReader struct {
-	*store
-	off int64
+	name  string
+	store *store
+	off   int64
 }
 
 func (o *originReader) Read(p []byte) (int, error) {
-	n, err := o.ReadAt(p, o.off)
+	data, err := o.store.Read(uint64(o.off))
+	if err != nil {
+		return 0, err
+	}
+	logItem := &api.SnapShotItem_LogItem{
+		QueueName: o.name,
+		LogRecord: data,
+	}
+	buff, err := proto.Marshal(logItem)
+	if err != nil {
+		return 0, err
+	}
+	n := copy(p, buff)
 	o.off += int64(n)
 	return n, err
 }

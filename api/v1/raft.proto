@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package="github.com/mohitkumar/api_v1";
+
+message SnapShotItem{
+    message KVItem{
+        bytes key =1;
+        bytes value=2;
+    }
+
+    message LogItem{
+        string queueName = 1;
+        bytes logRecord = 2;
+    }
+
+    oneof Item{
+        KVItem kvItem = 3;
+        LogItem logItem = 4;
+    }
+}
+

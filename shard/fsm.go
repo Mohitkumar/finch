@@ -46,8 +46,8 @@ func (f *fsm) applyDelete(key []byte) error {
 func (f *fsm) Snapshot() (raft.FSMSnapshot, error) {
 	readers := make([]io.Reader, len(f.queues))
 	i := 0
-	for _, queue := range f.queues {
-		readers[i] = queue.Reader()
+	for name, queue := range f.queues {
+		readers[i] = queue.Reader(name)
 		i++
 	}
 	return &fsmSnapshot{
@@ -58,34 +58,40 @@ func (f *fsm) Snapshot() (raft.FSMSnapshot, error) {
 
 func (f *fsm) Restore(r io.ReadCloser) error {
 	defer r.Close()
-
-	var (
-		readBuf  []byte
-		err      error
-		keyCount int = 0
-	)
-	// decode message from protobuf
+	var readBuf []byte
+	var err error
 	if readBuf, err = ioutil.ReadAll(r); err != nil {
-		// read done completely
 		return err
 	}
-
-	// decode messages from 1M block file
-	// the last message could decode failed with io.ErrUnexpectedEOF
+	var i uint64 = 0
 	for {
-		item := &api.KVItem{}
-		if err = proto.Unmarshal(readBuf, item); err == io.ErrUnexpectedEOF {
+		snapshotItem := &api.SnapShotItem{}
+		if err = proto.Unmarshal(readBuf, snapshotItem); err == io.ErrUnexpectedEOF {
 			break
 		}
 		if err != nil {
 			return err
 		}
-		// apply item to store
-		err = f.kvStore.Put(item.Key, item.Value)
-		if err != nil {
-			return err
+
+		switch item := snapshotItem.Item.(type) {
+		case *api.SnapShotItem_KvItem:
+			f.kvStore.Put(item.KvItem.Key, item.KvItem.Value)
+		case *api.SnapShotItem_LogItem_:
+			queuName := item.LogItem.QueueName
+			record := &api.LogRecord{}
+			if err = proto.Unmarshal(item.LogItem.LogRecord, record); err != nil {
+				return err
+			}
+			log := f.queues[queuName]
+			if i == 0 {
+				log.GetConfig().Segment.InitialOffset = record.Offset
+				if err := log.Reset(); err != nil {
+					return err
+				}
+			}
+			log.Append(record)
 		}
-		keyCount = keyCount + 1
+		i++
 	}
 
 	return nil

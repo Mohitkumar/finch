@@ -12,7 +12,7 @@ var (
 )
 
 const (
-	dataLengthWidth = 8
+	DataLengthWidth = 8
 )
 
 type (
@@ -48,7 +48,7 @@ func (s *store) Write(data []byte) (n uint64, pos uint64, err error) {
 	if err != nil {
 		return 0, 0, err
 	}
-	totalBytesWritten := bytesWritten + dataLengthWidth
+	totalBytesWritten := bytesWritten + DataLengthWidth
 
 	s.size += uint64(totalBytesWritten)
 	return uint64(totalBytesWritten), pos, nil
@@ -60,12 +60,12 @@ func (s *store) Read(pos uint64) ([]byte, error) {
 	if err := s.buf.Flush(); err != nil {
 		return nil, err
 	}
-	size := make([]byte, dataLengthWidth)
+	size := make([]byte, DataLengthWidth)
 	if _, err := s.ReadAt(size, int64(pos)); err != nil {
 		return nil, err
 	}
 	data := make([]byte, order.Uint64(size))
-	if _, err := s.ReadAt(data, int64(pos+dataLengthWidth)); err != nil {
+	if _, err := s.ReadAt(data, int64(pos+DataLengthWidth)); err != nil {
 		return nil, err
 	}
 	return data, nil
