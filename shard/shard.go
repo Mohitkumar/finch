@@ -161,3 +161,7 @@ func (shard *Shard) setupRaft() error {
 	}
 	return nil
 }
+
+func (shard *Shard) Join(id, addr string) error {
+
+}
