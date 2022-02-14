@@ -6,6 +6,7 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/raft v1.3.4
+	github.com/hashicorp/raft-boltdb v0.0.0-20211202195631-7d34b9fb3f42
 	github.com/stretchr/testify v1.7.0
 	github.com/tysonmote/gommap v0.0.1
 	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1 // indirect

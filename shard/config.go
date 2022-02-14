@@ -4,6 +4,7 @@ import "github.com/hashicorp/raft"
 
 type Config struct {
 	Dir        string
+	RaftBind   string
 	RaftConfig RaftConfig
 	LogConfig  LogConfig
 }
