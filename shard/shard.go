@@ -1,6 +1,7 @@
 package shard
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -163,5 +164,62 @@ func (shard *Shard) setupRaft() error {
 }
 
 func (shard *Shard) Join(id, addr string) error {
+	configFuture := shard.raft.GetConfiguration()
+	if err := configFuture.Error(); err != nil {
+		return err
+	}
+	serverId := raft.ServerID(id)
+	serverAddr := raft.ServerAddress(addr)
 
+	for _, srv := range configFuture.Configuration().Servers {
+		if srv.ID == serverId || srv.Address == serverAddr {
+			if srv.ID == serverId && srv.Address == serverAddr {
+				return nil
+			}
+			removeFuture := shard.raft.RemoveServer(serverId, 0, 0)
+			if err := removeFuture.Error(); err != nil {
+				return err
+			}
+		}
+	}
+	addFuture := shard.raft.AddVoter(serverId, serverAddr, 0, 0)
+	if err := addFuture.Error(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (shard *Shard) Leave(id string) error {
+	removeFuture := shard.raft.RemoveServer(raft.ServerID(id), 0, 0)
+	return removeFuture.Error()
+}
+
+func (shard *Shard) WaitForLeader(timeout time.Duration) error {
+	timeoutc := time.After(timeout)
+	ticker := time.NewTicker(time.Second)
+
+	for {
+		select {
+		case <-timeoutc:
+			return fmt.Errorf("timed out")
+		case <-ticker.C:
+			if leader := shard.raft.Leader(); leader != "" {
+				return nil
+			}
+		}
+	}
+}
+
+func (shard *Shard) Close() error {
+	shutDownFuture := shard.raft.Shutdown()
+	if err := shutDownFuture.Error(); err != nil {
+		return err
+	}
+	if err := shard.kvStore.Close(); err != nil {
+		return err
+	}
+	for _, queue := range shard.queues {
+		queue.Close()
+	}
+	return nil
 }

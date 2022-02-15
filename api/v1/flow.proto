@@ -6,20 +6,20 @@ message UUID{
     bytes id = 1;
 }
 
-message StateMachineContext{
+message FlowContext{
     UUID id = 1;
     string name = 2;
     string currentState =3;
-    uint64 currentFunction= 4;
+    uint64 currentAction= 4;
     map<string,string> data = 5;
     uint64 ttl = 6;
 }
 
 
-message StateMachine{
+message Flow{
     string name = 1;
     string startState =2;
-    map<string,Function> statesMap = 3;
+    map<string,Action> statesMap = 3;
     map<string,string> data = 4;
 }
 
@@ -28,21 +28,9 @@ message Parameter{
     bytes value =2;
 }
 
-message Function{
+message Action{
     uint64 id = 1;
     bytes name = 2;
     repeated Parameter inputParameters = 3;
     repeated Parameter outputParameters = 4;
-}
-
-message ExecutionRequest{
-    string name = 1;
-    map<string,string> data = 2;
-}
-
-message ExecutionResponse{
-    UUID id = 1;
-}
-service Engine{
-    rpc Execute(ExecutionRequest) returns (ExecutionResponse) {};
 }
