@@ -3,6 +3,8 @@ module github.com/mohitkumar/finch
 go 1.16
 
 require (
+	github.com/buraksezer/consistent v0.9.0
+	github.com/cespare/xxhash v1.1.0
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/raft v1.3.4
