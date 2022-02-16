@@ -38,6 +38,7 @@ type Coordinator struct {
 	consistent  *consistent.Consistent
 	shardToPeer map[string][]string
 	membership  *discovery.Membership
+	ch          chan MemberChangeMsg
 }
 
 type hasher struct{}
@@ -54,9 +55,11 @@ func NewCoordinator(config Config) (*Coordinator, error) {
 		Load:              1.25,
 	}
 	c := consistent.New(nil, cfg)
+	ch := make(chan MemberChangeMsg, 1024)
 	coord := &Coordinator{
 		consistent: c,
 		config:     config,
+		ch:         ch,
 	}
 	if err := coord.setupMembership(); err != nil {
 		return nil, err
@@ -69,7 +72,9 @@ func (c *Coordinator) setupMembership() error {
 	if err != nil {
 		return err
 	}
-	handler := &handler{}
+	handler := &handler{
+		ch: c.ch,
+	}
 	c.membership, err = discovery.New(handler, discovery.Config{
 		NodeName: c.config.NodeName,
 		BindAddr: c.config.BindAddr,
