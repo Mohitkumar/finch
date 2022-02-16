@@ -28,10 +28,18 @@ func (shard *Shard) CreateFlow(flow *api.Flow) (FlowCreateStatus, error) {
 	if err != nil {
 		return FlowCreateStatusFailed, err
 	}
-	if err := shard.kvStore.Put([]byte(key), flowBytes); err != nil {
+	kvItem := &api.KVItem{
+		Key:   []byte(key),
+		Value: flowBytes,
+	}
+	if _, err := shard.apply(DBPutRequestType, kvItem); err != nil {
 		return FlowCreateStatusFailed, err
 	}
-	if err := shard.kvStore.Put([]byte(getFlowShardPrefix(flow.Name)), []byte(shard.ID)); err != nil {
+	kvItem = &api.KVItem{
+		Key:   []byte(getFlowShardPrefix(flow.Name)),
+		Value: []byte(shard.ID),
+	}
+	if _, err := shard.apply(DBPutRequestType, kvItem); err != nil {
 		return FlowCreateStatusFailed, err
 	}
 

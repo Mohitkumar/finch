@@ -1,12 +1,14 @@
 package shard
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/mohitkumar/finch/log"
@@ -222,4 +224,31 @@ func (shard *Shard) Close() error {
 		queue.Close()
 	}
 	return nil
+}
+
+func (shard *Shard) apply(reqType RequestType, req proto.Message) (interface{}, error) {
+	var buf bytes.Buffer
+	_, err := buf.Write([]byte{byte(reqType)})
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := proto.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	_, err = buf.Write(b)
+	if err != nil {
+		return nil, err
+	}
+	applyFuture := shard.raft.Apply(buf.Bytes(), 10*time.Second)
+	if applyFuture.Error() != nil {
+		return nil, applyFuture.Error()
+	}
+	res := applyFuture.Response()
+
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res, nil
 }
