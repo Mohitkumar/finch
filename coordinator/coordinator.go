@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/buraksezer/consistent"
-	"github.com/cespare/xxhash"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/mohitkumar/finch/storage"
@@ -31,10 +29,6 @@ type RaftConfig struct {
 }
 
 type Config struct {
-	ConsistentHash struct {
-		PartitionCount    uint
-		ReplicationFactor uint
-	}
 	Dir            string
 	NodeName       string
 	BindAddr       string
@@ -58,35 +52,19 @@ func (c Config) RPCAddr() (string, error) {
 }
 
 type Coordinator struct {
-	config      Config
-	consistent  *consistent.Consistent
-	shardToPeer map[string][]string
-	dbDir       string
-	raftDir     string
-	kvStore     storage.KVStore
-	raft        *raft.Raft
-	logger      *zap.Logger
+	config  Config
+	dbDir   string
+	raftDir string
+	kvStore storage.KVStore
+	raft    *raft.Raft
+	logger  *zap.Logger
 }
 
-type hasher struct{}
-
-func (h hasher) Sum64(data []byte) uint64 {
-	// you should use a proper hash function for uniformity.
-	return xxhash.Sum64(data)
-}
 func NewCoordinator(config Config) (*Coordinator, error) {
-	cfg := consistent.Config{
-		Hasher:            hasher{},
-		PartitionCount:    int(config.ConsistentHash.PartitionCount),
-		ReplicationFactor: int(config.ConsistentHash.ReplicationFactor),
-		Load:              1.25,
-	}
-	c := consistent.New(nil, cfg)
+
 	coord := &Coordinator{
-		consistent:  c,
-		config:      config,
-		shardToPeer: make(map[string][]string),
-		logger:      zap.L().Named("coordinator"),
+		config: config,
+		logger: zap.L().Named("coordinator"),
 	}
 	if err := coord.setupDirectories(); err != nil {
 		return nil, err

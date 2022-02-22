@@ -1,4 +1,4 @@
-package server
+package shard
 
 import (
 	"context"
@@ -13,24 +13,24 @@ type (
 		Read(offset uint64) (*api.LogRecord, error)
 	}
 
-	Config struct {
+	GrpcConfig struct {
 		CommitLog CommitLog
 	}
 
 	grpcServer struct {
 		api.UnimplementedLogServer
-		*Config
+		*GrpcConfig
 	}
 )
 
-func newGrpcServer(config *Config) (*grpcServer, error) {
+func newGrpcServer(config *GrpcConfig) (*grpcServer, error) {
 	srv := &grpcServer{
-		Config: config,
+		GrpcConfig: config,
 	}
 	return srv, nil
 }
 
-func NewServer(config *Config) (*grpc.Server, error) {
+func NewServer(config *GrpcConfig) (*grpc.Server, error) {
 	gsrv := grpc.NewServer()
 
 	srv, err := newGrpcServer(config)

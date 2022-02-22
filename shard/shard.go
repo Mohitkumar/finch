@@ -12,24 +12,19 @@ import (
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/mohitkumar/finch/log"
-	"github.com/mohitkumar/finch/storage"
 )
 
 type RequestType uint8
 
 const (
-	DBPutRequestType     RequestType = 0
-	DBDeleteRequestType  RequestType = 1
-	LogAppendRequestType RequestType = 2
+	LogAppendRequestType RequestType = 0
 )
 
 type Shard struct {
 	ID      string
 	config  Config
-	kvStore storage.KVStore
 	queues  map[string]log.Log
 	raft    *raft.Raft
-	dbDir   string
 	logDir  string
 	raftDir string
 }
@@ -44,7 +39,6 @@ func NewShard(Id string, confg Config) (*Shard, error) {
 	if err := shard.setupDirectories(); err != nil {
 		return nil, err
 	}
-	shard.setupStorage()
 	if err := shard.CreateQueue("system"); err != nil {
 		return nil, err
 	}
@@ -58,11 +52,6 @@ func NewShard(Id string, confg Config) (*Shard, error) {
 func (shard *Shard) setupDirectories() error {
 	baseDir := shard.config.Dir
 	shardDir := filepath.Join(baseDir, shard.ID)
-	dbDir := filepath.Join(shardDir, "db")
-	if err := os.MkdirAll(dbDir, 0755); err != nil {
-		return err
-	}
-	shard.dbDir = dbDir
 	logDir := filepath.Join(shardDir, "log")
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return err
@@ -75,13 +64,6 @@ func (shard *Shard) setupDirectories() error {
 	}
 	shard.raftDir = raftDir
 	return nil
-}
-
-func (shard *Shard) setupStorage() {
-	config := storage.Config{
-		Dir: shard.dbDir,
-	}
-	shard.kvStore = storage.NewStore(config)
 }
 
 func (shard *Shard) CreateQueue(name string) error {
@@ -215,9 +197,6 @@ func (shard *Shard) WaitForLeader(timeout time.Duration) error {
 func (shard *Shard) Close() error {
 	shutDownFuture := shard.raft.Shutdown()
 	if err := shutDownFuture.Error(); err != nil {
-		return err
-	}
-	if err := shard.kvStore.Close(); err != nil {
 		return err
 	}
 	for _, queue := range shard.queues {

@@ -101,6 +101,24 @@ func (c *CoordinatorService) setupMembership() error {
 	return err
 }
 
+func (c *CoordinatorService) setupServer() error {
+	serverConfig := &GrpcConfig{
+		Coordinator: c.coord,
+	}
+	var err error
+	c.server, err = NewServer(serverConfig)
+	if err != nil {
+		return err
+	}
+	grpcLn := c.mux.Match(cmux.Any())
+	go func() {
+		if err := c.server.Serve(grpcLn); err != nil {
+			_ = c.Shutdown()
+		}
+	}()
+	return err
+}
+
 func (c *CoordinatorService) serve() error {
 	if err := c.mux.Serve(); err != nil {
 		_ = c.Shutdown()

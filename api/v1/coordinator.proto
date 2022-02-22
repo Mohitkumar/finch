@@ -34,3 +34,19 @@ message Action{
     repeated Parameter inputParameters = 3;
     repeated Parameter outputParameters = 4;
 }
+
+message FlowCreateRequest{
+    Flow flow = 1;
+}
+
+message FlowCreateResponse{
+    enum Status{
+        SUCCESS = 0;
+        FAILED = 1;
+    }
+    Status status = 1;
+}
+
+service Coordinator{
+    rpc CreateFlow(FlowCreateRequest) returns (FlowCreateResponse){}
+}

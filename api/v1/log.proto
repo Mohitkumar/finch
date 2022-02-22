@@ -7,6 +7,11 @@ message LogRecord{
     uint64 offset=2;
 }
 
+message LogItem{
+    string queueName =1;
+    LogRecord logRecord = 2;
+}
+
 message ProduceRequest{
     LogRecord record = 1;
 }
