@@ -103,7 +103,7 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 // START: run
 func (c *cli) run(cmd *cobra.Command, args []string) error {
 	var err error
-	agent, err := CoordinatorService.New(c.cfg.Config)
+	agent, err := coordinator.New(c.cfg.Config)
 	if err != nil {
 		return err
 	}
