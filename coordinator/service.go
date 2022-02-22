@@ -104,6 +104,7 @@ func (c *CoordinatorService) setupMembership() error {
 func (c *CoordinatorService) setupServer() error {
 	serverConfig := &GrpcConfig{
 		Coordinator: c.coord,
+		GetServerer: c.coord,
 	}
 	var err error
 	c.server, err = NewServer(serverConfig)

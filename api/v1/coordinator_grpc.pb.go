@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CoordinatorClient interface {
 	CreateFlow(ctx context.Context, in *FlowCreateRequest, opts ...grpc.CallOption) (*FlowCreateResponse, error)
+	GetServers(ctx context.Context, in *GetServersRequest, opts ...grpc.CallOption) (*GetServersResponse, error)
 }
 
 type coordinatorClient struct {
@@ -38,11 +39,21 @@ func (c *coordinatorClient) CreateFlow(ctx context.Context, in *FlowCreateReques
 	return out, nil
 }
 
+func (c *coordinatorClient) GetServers(ctx context.Context, in *GetServersRequest, opts ...grpc.CallOption) (*GetServersResponse, error) {
+	out := new(GetServersResponse)
+	err := c.cc.Invoke(ctx, "/Coordinator/GetServers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CoordinatorServer is the server API for Coordinator service.
 // All implementations must embed UnimplementedCoordinatorServer
 // for forward compatibility
 type CoordinatorServer interface {
 	CreateFlow(context.Context, *FlowCreateRequest) (*FlowCreateResponse, error)
+	GetServers(context.Context, *GetServersRequest) (*GetServersResponse, error)
 	mustEmbedUnimplementedCoordinatorServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedCoordinatorServer struct {
 
 func (UnimplementedCoordinatorServer) CreateFlow(context.Context, *FlowCreateRequest) (*FlowCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFlow not implemented")
+}
+func (UnimplementedCoordinatorServer) GetServers(context.Context, *GetServersRequest) (*GetServersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServers not implemented")
 }
 func (UnimplementedCoordinatorServer) mustEmbedUnimplementedCoordinatorServer() {}
 
@@ -84,6 +98,24 @@ func _Coordinator_CreateFlow_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Coordinator_GetServers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoordinatorServer).GetServers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Coordinator/GetServers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoordinatorServer).GetServers(ctx, req.(*GetServersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Coordinator_ServiceDesc is the grpc.ServiceDesc for Coordinator service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var Coordinator_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateFlow",
 			Handler:    _Coordinator_CreateFlow_Handler,
+		},
+		{
+			MethodName: "GetServers",
+			Handler:    _Coordinator_GetServers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

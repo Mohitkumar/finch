@@ -491,6 +491,154 @@ func (x *FlowCreateResponse) GetStatus() FlowCreateResponse_Status {
 	return FlowCreateResponse_SUCCESS
 }
 
+type Server struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id       string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	RpcAddr  string `protobuf:"bytes,2,opt,name=rpc_addr,json=rpcAddr,proto3" json:"rpc_addr,omitempty"`
+	IsLeader bool   `protobuf:"varint,3,opt,name=is_leader,json=isLeader,proto3" json:"is_leader,omitempty"`
+}
+
+func (x *Server) Reset() {
+	*x = Server{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_coordinator_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Server) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Server) ProtoMessage() {}
+
+func (x *Server) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_coordinator_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Server.ProtoReflect.Descriptor instead.
+func (*Server) Descriptor() ([]byte, []int) {
+	return file_api_v1_coordinator_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Server) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Server) GetRpcAddr() string {
+	if x != nil {
+		return x.RpcAddr
+	}
+	return ""
+}
+
+func (x *Server) GetIsLeader() bool {
+	if x != nil {
+		return x.IsLeader
+	}
+	return false
+}
+
+type GetServersRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetServersRequest) Reset() {
+	*x = GetServersRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_coordinator_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetServersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServersRequest) ProtoMessage() {}
+
+func (x *GetServersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_coordinator_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServersRequest.ProtoReflect.Descriptor instead.
+func (*GetServersRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_coordinator_proto_rawDescGZIP(), []int{8}
+}
+
+type GetServersResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Servers []*Server `protobuf:"bytes,1,rep,name=servers,proto3" json:"servers,omitempty"`
+}
+
+func (x *GetServersResponse) Reset() {
+	*x = GetServersResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_coordinator_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetServersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServersResponse) ProtoMessage() {}
+
+func (x *GetServersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_coordinator_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServersResponse.ProtoReflect.Descriptor instead.
+func (*GetServersResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_coordinator_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetServersResponse) GetServers() []*Server {
+	if x != nil {
+		return x.Servers
+	}
+	return nil
+}
+
 var File_api_v1_coordinator_proto protoreflect.FileDescriptor
 
 var file_api_v1_coordinator_proto_rawDesc = []byte{
@@ -553,14 +701,27 @@ var file_api_v1_coordinator_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
 	0x22, 0x21, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0b, 0x0a, 0x07, 0x53, 0x55,
 	0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49, 0x4c, 0x45,
-	0x44, 0x10, 0x01, 0x32, 0x46, 0x0a, 0x0b, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74,
+	0x44, 0x10, 0x01, 0x22, 0x50, 0x0a, 0x06, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x12, 0x0e, 0x0a,
+	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x19, 0x0a,
+	0x08, 0x72, 0x70, 0x63, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x72, 0x70, 0x63, 0x41, 0x64, 0x64, 0x72, 0x12, 0x1b, 0x0a, 0x09, 0x69, 0x73, 0x5f, 0x6c,
+	0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4c,
+	0x65, 0x61, 0x64, 0x65, 0x72, 0x22, 0x13, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76,
+	0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x37, 0x0a, 0x12, 0x47, 0x65,
+	0x74, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x21, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x07, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76,
+	0x65, 0x72, 0x73, 0x32, 0x7f, 0x0a, 0x0b, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74,
 	0x6f, 0x72, 0x12, 0x37, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x6c, 0x6f, 0x77,
 	0x12, 0x12, 0x2e, 0x46, 0x6c, 0x6f, 0x77, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x46, 0x6c, 0x6f, 0x77, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x1e, 0x5a, 0x1c, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x6f, 0x68, 0x69, 0x74, 0x6b,
-	0x75, 0x6d, 0x61, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x37, 0x0a, 0x0a, 0x47,
+	0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, 0x12, 0x12, 0x2e, 0x47, 0x65, 0x74, 0x53,
+	0x65, 0x72, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e,
+	0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x42, 0x1e, 0x5a, 0x1c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x6d, 0x6f, 0x68, 0x69, 0x74, 0x6b, 0x75, 0x6d, 0x61, 0x72, 0x2f, 0x61, 0x70,
+	0x69, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -576,7 +737,7 @@ func file_api_v1_coordinator_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_coordinator_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_v1_coordinator_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_api_v1_coordinator_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_api_v1_coordinator_proto_goTypes = []interface{}{
 	(FlowCreateResponse_Status)(0), // 0: FlowCreateResponse.Status
 	(*UUID)(nil),                   // 1: UUID
@@ -586,27 +747,33 @@ var file_api_v1_coordinator_proto_goTypes = []interface{}{
 	(*Action)(nil),                 // 5: Action
 	(*FlowCreateRequest)(nil),      // 6: FlowCreateRequest
 	(*FlowCreateResponse)(nil),     // 7: FlowCreateResponse
-	nil,                            // 8: FlowContext.DataEntry
-	nil,                            // 9: Flow.StatesMapEntry
-	nil,                            // 10: Flow.DataEntry
+	(*Server)(nil),                 // 8: Server
+	(*GetServersRequest)(nil),      // 9: GetServersRequest
+	(*GetServersResponse)(nil),     // 10: GetServersResponse
+	nil,                            // 11: FlowContext.DataEntry
+	nil,                            // 12: Flow.StatesMapEntry
+	nil,                            // 13: Flow.DataEntry
 }
 var file_api_v1_coordinator_proto_depIdxs = []int32{
 	1,  // 0: FlowContext.id:type_name -> UUID
-	8,  // 1: FlowContext.data:type_name -> FlowContext.DataEntry
-	9,  // 2: Flow.statesMap:type_name -> Flow.StatesMapEntry
-	10, // 3: Flow.data:type_name -> Flow.DataEntry
+	11, // 1: FlowContext.data:type_name -> FlowContext.DataEntry
+	12, // 2: Flow.statesMap:type_name -> Flow.StatesMapEntry
+	13, // 3: Flow.data:type_name -> Flow.DataEntry
 	4,  // 4: Action.inputParameters:type_name -> Parameter
 	4,  // 5: Action.outputParameters:type_name -> Parameter
 	3,  // 6: FlowCreateRequest.flow:type_name -> Flow
 	0,  // 7: FlowCreateResponse.status:type_name -> FlowCreateResponse.Status
-	5,  // 8: Flow.StatesMapEntry.value:type_name -> Action
-	6,  // 9: Coordinator.CreateFlow:input_type -> FlowCreateRequest
-	7,  // 10: Coordinator.CreateFlow:output_type -> FlowCreateResponse
-	10, // [10:11] is the sub-list for method output_type
-	9,  // [9:10] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	8,  // 8: GetServersResponse.servers:type_name -> Server
+	5,  // 9: Flow.StatesMapEntry.value:type_name -> Action
+	6,  // 10: Coordinator.CreateFlow:input_type -> FlowCreateRequest
+	9,  // 11: Coordinator.GetServers:input_type -> GetServersRequest
+	7,  // 12: Coordinator.CreateFlow:output_type -> FlowCreateResponse
+	10, // 13: Coordinator.GetServers:output_type -> GetServersResponse
+	12, // [12:14] is the sub-list for method output_type
+	10, // [10:12] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_coordinator_proto_init() }
@@ -699,6 +866,42 @@ func file_api_v1_coordinator_proto_init() {
 				return nil
 			}
 		}
+		file_api_v1_coordinator_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Server); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_v1_coordinator_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetServersRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_v1_coordinator_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetServersResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -706,7 +909,7 @@ func file_api_v1_coordinator_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_v1_coordinator_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

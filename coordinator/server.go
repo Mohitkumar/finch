@@ -9,11 +9,16 @@ import (
 
 type (
 	ICoordinator interface {
-		CreateFlow(flow *api.Flow) (FlowCreateStatus, error)
+		CreateFlow(flow *api.Flow) (*api.FlowCreateResponse, error)
+	}
+
+	GetServerer interface {
+		GetServers() ([]*api.Server, error)
 	}
 
 	GrpcConfig struct {
 		Coordinator ICoordinator
+		GetServerer GetServerer
 	}
 
 	grpcServer struct {
@@ -47,13 +52,18 @@ func NewServer(config *GrpcConfig) (*grpc.Server, error) {
 func (s *grpcServer) CreateFlow(ctx context.Context, req *api.FlowCreateRequest) (*api.FlowCreateResponse, error) {
 	status, err := s.Coordinator.CreateFlow(req.Flow)
 	if err != nil {
+		return status, err
+	}
+	return status, nil
+}
+
+func (s *grpcServer) GetServers(
+	ctx context.Context, req *api.GetServersRequest,
+) (
+	*api.GetServersResponse, error) {
+	servers, err := s.GetServerer.GetServers()
+	if err != nil {
 		return nil, err
 	}
-	var st api.FlowCreateResponse_Status
-	if status == FlowCreateStatusSuccess {
-		st = api.FlowCreateResponse_SUCCESS
-	} else {
-		st = api.FlowCreateResponse_SUCCESS
-	}
-	return &api.FlowCreateResponse{Status: st}, nil
+	return &api.GetServersResponse{Servers: servers}, nil
 }
