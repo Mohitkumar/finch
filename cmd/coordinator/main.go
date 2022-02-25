@@ -8,11 +8,18 @@ import (
 	"syscall"
 
 	"github.com/mohitkumar/finch/coordinator"
+	"github.com/mohitkumar/finch/httpserver"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
+	loggerMgr := initZapLog()
+	zap.ReplaceGlobals(loggerMgr)
+	defer loggerMgr.Sync()
+
 	cli := &cli{}
 
 	// START_HIGHLIGHT
@@ -38,6 +45,7 @@ type cli struct {
 type cfg struct {
 	coordinator.Config
 	startHttp bool
+	httpPort  int
 }
 
 func setupFlags(cmd *cobra.Command) error {
@@ -95,20 +103,41 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 	c.cfg.StartJoinAddrs = viper.GetStringSlice("start-join-addrs")
 	c.cfg.Bootstrap = viper.GetBool("bootstrap")
 	c.cfg.startHttp = viper.GetBool("startHttp")
+	c.cfg.httpPort = viper.GetInt("http-port")
 	return nil
 }
 
-// END: setup_cfg
-
-// START: run
 func (c *cli) run(cmd *cobra.Command, args []string) error {
 	var err error
-	agent, err := coordinator.New(c.cfg.Config)
+	coord, err := coordinator.New(c.cfg.Config)
 	if err != nil {
 		return err
+	}
+	if c.cfg.startHttp {
+		cfg := &httpserver.Config{
+			Port:         c.cfg.httpPort,
+			CoordRpcPort: c.cfg.RPCPort,
+		}
+		http, err := httpserver.NewServer(*cfg)
+		if err != nil {
+			return err
+		}
+		err = http.Start()
+		if err != nil {
+			return err
+		}
 	}
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
 	<-sigc
-	return agent.Shutdown()
+	return coord.Shutdown()
+}
+
+func initZapLog() *zap.Logger {
+	config := zap.NewDevelopmentConfig()
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	config.EncoderConfig.TimeKey = "timestamp"
+	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	logger, _ := config.Build()
+	return logger
 }

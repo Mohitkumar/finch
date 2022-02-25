@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/raft"
 	"github.com/mohitkumar/finch/discovery"
 	"github.com/soheilhy/cmux"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -25,12 +26,14 @@ type CoordinatorService struct {
 	shutdown     bool
 	shutdowns    chan struct{}
 	shutdownLock sync.Mutex
+	logger       *zap.Logger
 }
 
 func New(config Config) (*CoordinatorService, error) {
 	c := &CoordinatorService{
 		Config:    config,
 		shutdowns: make(chan struct{}),
+		logger:    zap.L().Named("coordinator-service"),
 	}
 	setup := []func() error{
 		c.setupMux,
@@ -48,6 +51,7 @@ func New(config Config) (*CoordinatorService, error) {
 }
 
 func (c *CoordinatorService) setupMux() error {
+	c.logger.Debug("setting up mux")
 	rpcAddr := fmt.Sprintf(
 		":%d",
 		c.Config.RPCPort,
@@ -61,6 +65,7 @@ func (c *CoordinatorService) setupMux() error {
 }
 
 func (c *CoordinatorService) setupCoordinator() error {
+	c.logger.Debug("setting up coordinator raft")
 	raftLn := c.mux.Match(func(reader io.Reader) bool {
 		b := make([]byte, 1)
 		if _, err := reader.Read(b); err != nil {
@@ -86,6 +91,7 @@ func (c *CoordinatorService) setupCoordinator() error {
 }
 
 func (c *CoordinatorService) setupMembership() error {
+	c.logger.Debug("setting up serf")
 	rpcAddr, err := c.Config.RPCAddr()
 	if err != nil {
 		return err
@@ -102,6 +108,7 @@ func (c *CoordinatorService) setupMembership() error {
 }
 
 func (c *CoordinatorService) setupServer() error {
+	c.logger.Debug("setting up grpc server for coordinator")
 	serverConfig := &GrpcConfig{
 		Coordinator: c.coord,
 		GetServerer: c.coord,
@@ -121,6 +128,7 @@ func (c *CoordinatorService) setupServer() error {
 }
 
 func (c *CoordinatorService) serve() error {
+	c.logger.Debug("starting coordinator service")
 	if err := c.mux.Serve(); err != nil {
 		_ = c.Shutdown()
 		return err

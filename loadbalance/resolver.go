@@ -36,12 +36,14 @@ func (r *Resolver) Build(
 			dialOpts,
 			grpc.WithTransportCredentials(opts.DialCreds),
 		)
+	} else {
+		dialOpts = append(dialOpts, grpc.WithInsecure())
 	}
 	r.serviceConfig = r.clientConn.ParseServiceConfig(
 		fmt.Sprintf(`{"loadBalancingConfig":[{"%s":{}}]}`, Name),
 	)
 	var err error
-	r.resolverConn, err = grpc.Dial(target.URL.Host, dialOpts...)
+	r.resolverConn, err = grpc.Dial(target.Endpoint, dialOpts...)
 	if err != nil {
 		return nil, err
 	}

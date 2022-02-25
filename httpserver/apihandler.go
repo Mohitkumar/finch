@@ -3,11 +3,11 @@ package httpserver
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	api "github.com/mohitkumar/finch/api/v1"
+	_ "github.com/mohitkumar/finch/loadbalance"
 	"google.golang.org/grpc"
 )
 
@@ -17,7 +17,7 @@ func (s *Server) HandleCreateFlow(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	conn, err := grpc.Dial(fmt.Sprintf(":%d", s.CoordRpcPort), grpc.WithInsecure())
+	conn, err := grpc.Dial("coordinator:///127.0.0.1:8400", grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
