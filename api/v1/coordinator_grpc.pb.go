@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CoordinatorClient interface {
 	CreateFlow(ctx context.Context, in *FlowCreateRequest, opts ...grpc.CallOption) (*FlowCreateResponse, error)
 	GetServers(ctx context.Context, in *GetServersRequest, opts ...grpc.CallOption) (*GetServersResponse, error)
+	GetFlow(ctx context.Context, in *FlowGetRequest, opts ...grpc.CallOption) (*FlowGetResponse, error)
 }
 
 type coordinatorClient struct {
@@ -48,12 +49,22 @@ func (c *coordinatorClient) GetServers(ctx context.Context, in *GetServersReques
 	return out, nil
 }
 
+func (c *coordinatorClient) GetFlow(ctx context.Context, in *FlowGetRequest, opts ...grpc.CallOption) (*FlowGetResponse, error) {
+	out := new(FlowGetResponse)
+	err := c.cc.Invoke(ctx, "/Coordinator/GetFlow", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CoordinatorServer is the server API for Coordinator service.
 // All implementations must embed UnimplementedCoordinatorServer
 // for forward compatibility
 type CoordinatorServer interface {
 	CreateFlow(context.Context, *FlowCreateRequest) (*FlowCreateResponse, error)
 	GetServers(context.Context, *GetServersRequest) (*GetServersResponse, error)
+	GetFlow(context.Context, *FlowGetRequest) (*FlowGetResponse, error)
 	mustEmbedUnimplementedCoordinatorServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedCoordinatorServer) CreateFlow(context.Context, *FlowCreateReq
 }
 func (UnimplementedCoordinatorServer) GetServers(context.Context, *GetServersRequest) (*GetServersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServers not implemented")
+}
+func (UnimplementedCoordinatorServer) GetFlow(context.Context, *FlowGetRequest) (*FlowGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFlow not implemented")
 }
 func (UnimplementedCoordinatorServer) mustEmbedUnimplementedCoordinatorServer() {}
 
@@ -116,6 +130,24 @@ func _Coordinator_GetServers_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Coordinator_GetFlow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlowGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoordinatorServer).GetFlow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Coordinator/GetFlow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoordinatorServer).GetFlow(ctx, req.(*FlowGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Coordinator_ServiceDesc is the grpc.ServiceDesc for Coordinator service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var Coordinator_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetServers",
 			Handler:    _Coordinator_GetServers_Handler,
+		},
+		{
+			MethodName: "GetFlow",
+			Handler:    _Coordinator_GetFlow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -10,6 +10,7 @@ import (
 type (
 	ICoordinator interface {
 		CreateFlow(flow *api.Flow) (*api.FlowCreateResponse, error)
+		GetFlow(req *api.FlowGetRequest) (*api.FlowGetResponse, error)
 	}
 
 	GetServerer interface {
@@ -55,6 +56,14 @@ func (s *grpcServer) CreateFlow(ctx context.Context, req *api.FlowCreateRequest)
 		return status, err
 	}
 	return status, nil
+}
+
+func (s *grpcServer) GetFlow(ctx context.Context, req *api.FlowGetRequest) (*api.FlowGetResponse, error) {
+	res, err := s.Coordinator.GetFlow(req)
+	if err != nil {
+		return res, err
+	}
+	return res, nil
 }
 
 func (s *grpcServer) GetServers(

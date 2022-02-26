@@ -101,7 +101,7 @@ func (c *Coordinator) setupStorage() {
 }
 
 func (c *Coordinator) setupRaft() error {
-	fsm := &fsm{}
+	fsm := &fsm{kvStore: c.kvStore}
 	stableStore, err := raftboltdb.NewBoltStore(
 		filepath.Join(c.raftDir, "stable"),
 	)
@@ -218,6 +218,10 @@ func (c *Coordinator) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (c *Coordinator) get(key []byte) ([]byte, error) {
+	return c.kvStore.Get(key)
 }
 
 func (c *Coordinator) apply(reqType RequestType, req proto.Message) (interface{}, error) {

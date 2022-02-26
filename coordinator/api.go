@@ -29,6 +29,20 @@ func (c *Coordinator) CreateFlow(flow *api.Flow) (*api.FlowCreateResponse, error
 	return &api.FlowCreateResponse{Status: api.FlowCreateResponse_SUCCESS}, nil
 }
 
+func (c *Coordinator) GetFlow(req *api.FlowGetRequest) (*api.FlowGetResponse, error) {
+	c.logger.Debug("get flow request recevied")
+	key := []byte(getFlowKeyPrefix(req.Name))
+	res, err := c.get(key)
+	if err != nil {
+		return nil, err
+	}
+	flow := &api.Flow{}
+	if err := proto.Unmarshal(res, flow); err != nil {
+		return nil, err
+	}
+	return &api.FlowGetResponse{Flow: flow}, nil
+}
+
 func (c *Coordinator) GetServers() ([]*api.Server, error) {
 	future := c.raft.GetConfiguration()
 	if err := future.Error(); err != nil {
