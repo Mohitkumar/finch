@@ -33,10 +33,19 @@ func (s *Server) HandleCreateFlow(w http.ResponseWriter, r *http.Request) {
 				inputParamsPb[k] = val
 			}
 		}
+		nextActions := action.Next
+		var nextNodes []*api.ActionNode
+		for _, next := range nextActions {
+			nextNodes = append(nextNodes, &api.ActionNode{
+				Id:    next.Id,
+				Event: next.Event,
+			})
+		}
 		actions = append(actions, &api.Action{
 			Id:              action.Id,
 			Name:            action.Name,
 			InputParameters: inputParamsPb,
+			Next:            nextNodes,
 		})
 	}
 	res, err := s.getCoordClient().CreateFlow(ctx, &api.FlowCreateRequest{
@@ -86,10 +95,18 @@ func (s *Server) HandleGetFlow(w http.ResponseWriter, r *http.Request) {
 				inputParamsPb[k] = val
 			}
 		}
+		var nextNodes []ActionNode
+		for _, next := range action.Next {
+			nextNodes = append(nextNodes, ActionNode{
+				Id:    next.Id,
+				Event: next.Event,
+			})
+		}
 		actions = append(actions, Action{
 			Id:              action.Id,
 			Name:            action.Name,
 			InputParameters: inputParamsPb,
+			Next:            nextNodes,
 		})
 	}
 	response := &Flow{
