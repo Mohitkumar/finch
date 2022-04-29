@@ -1,0 +1,16 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+option go_package="github.com/mohitkumar/api_v1";
+
+message UUID{
+    bytes id = 1;
+}
+
+message FlowContext{
+    UUID id = 1;
+    string name = 2;
+    string currentState =3;
+    uint64 currentAction= 4;
+    map<string,google.protobuf.Value> data = 5;
+    uint64 ttl = 6;
+}

@@ -1,0 +1,35 @@
+{
+	"name" :"wf",
+	"data":{
+		"key":"val"
+	},
+	"rootAction":1,
+	"actions":[
+		{
+			"id":1,
+			"type":"system",
+			"name":"http",
+			"data":{},
+			"next":2
+		},
+		{
+			"id":2,
+			"type":"system",
+			"name":"decision",
+			"expression":"$1.data.status",
+			"cases":[
+				"200":{"next":3},
+				"500":{"next":5}
+			]
+		},
+		{
+			"id":3,
+			"type":"system",
+			"name":"fork",
+			"forks":[
+				6,7
+			],
+			"join":8
+		}
+	]
+}
