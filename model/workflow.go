@@ -11,5 +11,5 @@ type Workflow struct {
 	Name       string                 `json:"name"`
 	Data       map[string]interface{} `json:"data"`
 	RootAction int                    `json:"rootAction"`
-	Actions    Action                 `json:"actions"`
+	Actions    []Action               `json:"actions"`
 }

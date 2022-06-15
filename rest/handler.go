@@ -5,10 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
+	api "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/model"
 )
 
 func (s *Server) HandleCreateFlow(w http.ResponseWriter, r *http.Request) {
-	var flow Workflow
+	var flow model.Workflow
 	if err := json.NewDecoder(r.Body).Decode(&flow); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}

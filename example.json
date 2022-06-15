@@ -17,10 +17,10 @@
 			"type":"system",
 			"name":"decision",
 			"expression":"$1.data.status",
-			"cases":[
+			"cases":{
 				"200":{"next":3},
 				"500":{"next":5}
-			]
+			}
 		},
 		{
 			"id":3,
