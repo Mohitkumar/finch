@@ -24,5 +24,5 @@ func newBaseDao(conf Config) *baseDao {
 }
 
 func (bs *baseDao) getNamespaceKey(args ...string) string {
-	return strings.Join(args, ":")
+	return fmt.Sprintf("%s:%s", bs.namespace, strings.Join(args, ":"))
 }

@@ -11,5 +11,17 @@ type Workflow struct {
 	Name       string                 `json:"name"`
 	Data       map[string]interface{} `json:"data"`
 	RootAction int                    `json:"rootAction"`
-	Actions    []Action               `json:"actions"`
+	Actions    []ActionDef            `json:"actions"`
+}
+
+type ActionDef struct {
+	Id         string         `json:"id"`
+	Type       string         `json:"type"`
+	Name       string         `json:"name"`
+	Data       map[string]any `json:"data"`
+	Next       int            `json:"next"`
+	Expression string         `json:"expression"`
+	Cases      map[string]int `json:"cases"`
+	Forks      []int          `json:"forks"`
+	Join       int            `json:"join"`
 }

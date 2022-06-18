@@ -19,8 +19,8 @@
 			"name":"decision",
 			"expression":"$1.data.status",
 			"cases":{
-				"200":{"next":3},
-				"500":{"next":5}
+				"200":3,
+				"500":5
 			}
 		},
 		{
