@@ -1,7 +1,8 @@
 {
 	"name" :"wf",
 	"data":{
-		"key":"val"
+		"key":"val",
+		"keyInt" :234
 	},
 	"rootAction":1,
 	"actions":[

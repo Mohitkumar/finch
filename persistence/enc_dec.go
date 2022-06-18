@@ -2,16 +2,20 @@ package persistence
 
 import (
 	"encoding/json"
-
-	"github.com/mohitkumar/finch/model"
 )
 
-type serializable interface {
-	model.Workflow | model.Flow
+type EncoderDecoder[T any] interface {
+	Encode(value T) ([]byte, error)
+	Decode(data []byte) (*T, error)
 }
 
-type JsonEncDec[T serializable] struct{}
+type JsonEncDec[T any] struct{}
 
+var _ EncoderDecoder[any] = new(JsonEncDec[any])
+
+func NewJsonEncoderDecoder[T any]() *JsonEncDec[T] {
+	return &JsonEncDec[T]{}
+}
 func (encdec *JsonEncDec[T]) Encode(value T) ([]byte, error) {
 	res, err := json.Marshal(value)
 	if err != nil {

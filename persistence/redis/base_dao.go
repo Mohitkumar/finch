@@ -2,12 +2,14 @@ package redis
 
 import (
 	"fmt"
+	"strings"
 
 	rd "github.com/go-redis/redis/v9"
 )
 
 type baseDao struct {
 	redisClient *rd.Client
+	namespace   string
 }
 
 func newBaseDao(conf Config) *baseDao {
@@ -17,5 +19,10 @@ func newBaseDao(conf Config) *baseDao {
 	})
 	return &baseDao{
 		redisClient: redisClient,
+		namespace:   conf.Namespace,
 	}
+}
+
+func (bs *baseDao) getNamespaceKey(args ...string) string {
+	return strings.Join(args, ":")
 }
