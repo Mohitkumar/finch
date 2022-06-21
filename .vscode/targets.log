@@ -6,11 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
-make: *** No rule to make target `all'.  Stop.
 
-
-# Make data base, printed on Sat Jun 18 08:06:20 2022
+# Make data base, printed on Tue Jun 21 14:54:33 2022
 
 # Variables
 
@@ -49,7 +46,7 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 INFOPATH = /opt/homebrew/share/info:
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-9f2caeab-9703-44d5-acae-5b049cfc2c2b.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-d168fe7c-600d-48eb-8645-0304ec54fc1d.sock
 # environment
 VSCODE_CWD = /Users/mohitkumar/code/pr_trunk/finch
 # environment
@@ -65,7 +62,6 @@ VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
- 
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.OUkuvXPlSO/Listeners
@@ -138,7 +134,7 @@ MFLAGS = -Rrqp
 # environment
 TERM_PROGRAM_VERSION = 443
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.3566790F-40E5-4416-9BC6-25BDFA299125
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.96C14003-DA28-46C4-9CDC-433571ABF826
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -170,13 +166,12 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 42572
+VSCODE_PID = 64345
 # variable set hash-table stats:
 # Load=78/1024=8%, Rehash=0, Collisions=2/101=2%
 
 # Pattern-specific Variable Values
 
- 
 # No pattern-specific variable values.
 
 # Directories
@@ -247,6 +242,8 @@ compile:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Sat Jun 18 08:06:20 2022
+# Finished Make data base on Tue Jun 21 14:54:33 2022
 
  
+make: *** No rule to make target `all'.  Stop.
+

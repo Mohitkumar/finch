@@ -16,6 +16,7 @@ func (s *Server) HandleCreateFlow(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&flow); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
+	defer r.Body.Close()
 	err := s.wfDao.Save(flow)
 	if err != nil {
 		logger.Error("error creating workflow", zap.Error(err))

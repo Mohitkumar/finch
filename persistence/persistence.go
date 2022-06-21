@@ -1,6 +1,10 @@
 package persistence
 
-import "github.com/mohitkumar/finch/model"
+import (
+	"time"
+
+	"github.com/mohitkumar/finch/model"
+)
 
 const WF_PREFIX string = "WF_"
 const METADATA_CF string = "METADATA_"
@@ -11,4 +15,19 @@ type WorkflowDao interface {
 	Delete(name string) error
 
 	Get(name string) (*model.Workflow, error)
+}
+
+type Queue interface {
+	Push(queueName string, mesage []byte) error
+	Pop(queuName string) ([]byte, error)
+}
+
+type PriorityQueue interface {
+	Queue
+	PushPriority(queueName string, priority int, mesage []byte) error
+}
+
+type DelayQueue interface {
+	Queue
+	PushWithDelay(queueName string, delay time.Duration, message []byte) error
 }
