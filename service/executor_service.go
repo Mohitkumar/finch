@@ -11,6 +11,7 @@ import (
 
 type WorkflowExecutionService struct {
 	workflowDao persistence.WorkflowDao
+	flowDao     persistence.FlowDao
 	queue       persistence.Queue
 }
 
@@ -21,6 +22,9 @@ func (s *WorkflowExecutionService) StartFlow(name string, data map[string]any) e
 		return fmt.Errorf("workflow = %s not found", name)
 	}
 	flow := wf.Convert(uuid.New().String(), data)
-	//todo create and save context
-	return flow.Actions[flow.RootAction].Execute()
+	flowCtx, err := s.flowDao.CreateAndSaveFlowContext(name, flow.RootAction, flow)
+	if err != nil {
+		return err
+	}
+	return flow.Actions[flow.RootAction].Execute(flowCtx)
 }

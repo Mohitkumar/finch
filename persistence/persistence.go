@@ -3,6 +3,7 @@ package persistence
 import (
 	"time"
 
+	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/model"
 )
 
@@ -15,6 +16,10 @@ type WorkflowDao interface {
 	Delete(name string) error
 
 	Get(name string) (*model.Workflow, error)
+}
+
+type FlowDao interface {
+	CreateAndSaveFlowContext(name string, action int, flow model.Flow) (*api.FlowContext, error)
 }
 
 type Queue interface {

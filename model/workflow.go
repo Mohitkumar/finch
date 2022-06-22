@@ -27,7 +27,7 @@ func (wf *Workflow) Convert(id string, data map[string]any) Flow {
 		if action.Type == string(WF_TYPE_SYSTEM) {
 
 		} else {
-			flAct := NewBaseAction(action.Id, action.Type, action.Name, action.Data)
+			flAct := NewUserAction(action.Id, action.Type, action.Name, action.Data)
 			actionMap[action.Id] = flAct
 		}
 	}

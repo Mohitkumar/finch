@@ -2,15 +2,39 @@ syntax = "proto3";
 import "google/protobuf/struct.proto";
 option go_package="github.com/mohitkumar/api_v1";
 
-message UUID{
-    bytes id = 1;
-}
 
 message FlowContext{
-    UUID id = 1;
-    string name = 2;
-    string currentState =3;
-    uint64 currentAction= 4;
+    string id = 1;
+    int32 currentAction =2;
+    enum WorkflowState{
+        RUNNING = 0;
+        FAILED = 1;
+        COMPLETED = 2;
+    }
+    WorkflowState workflowState= 3;
+    enum ActionState{
+        A_RUNNING = 0;
+        A_FAILED = 1;
+        A_COMPLETED = 2;
+    }
+    ActionState currentActionState = 4;
     map<string,google.protobuf.Value> data = 5;
     uint64 ttl = 6;
+}
+
+message Task{
+    string workflowName = 1;
+    string flowId = 2;
+    map<string,google.protobuf.Value> data = 3;
+}
+
+message TaskResult{
+    string workflowName = 1;
+    string flowId = 2;
+    map<string,google.protobuf.Value> data = 3;
+    enum Status{
+        SUCCESS = 0;
+        FAIL  = 1;
+    }
+    Status status = 4;
 }
