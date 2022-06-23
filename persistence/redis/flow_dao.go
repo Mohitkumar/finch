@@ -4,8 +4,8 @@ import (
 	"context"
 
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -22,20 +22,21 @@ func NewRedisFlowDao(conf Config) *redisFlowDao {
 		baseDao: *newBaseDao(conf),
 	}
 }
-func (rf *redisFlowDao) CreateAndSaveFlowContext(name string, action int, flow model.Flow) (*api.FlowContext, error) {
-	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, name)
+func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
+	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wFname)
 	ctx := context.Background()
 	flowCtx := &api.FlowContext{
-		Id:                 flow.Id,
+		Id:                 flowId,
 		WorkflowState:      api.FlowContext_RUNNING,
 		CurrentActionState: api.FlowContext_A_RUNNING,
 		CurrentAction:      int32(action),
+		Data:               util.ConvertToProto(dataMap),
 	}
 	data, err := proto.Marshal(flowCtx)
 	if err != nil {
 		return nil, err
 	}
-	if err := rf.baseDao.redisClient.HSet(ctx, key, []string{flow.Id, string(data)}).Err(); err != nil {
+	if err := rf.baseDao.redisClient.HSet(ctx, key, []string{flowId, string(data)}).Err(); err != nil {
 		return nil, err
 	}
 	return flowCtx, nil

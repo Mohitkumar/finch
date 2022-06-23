@@ -19,7 +19,7 @@ type WorkflowDao interface {
 }
 
 type FlowDao interface {
-	CreateAndSaveFlowContext(name string, action int, flow model.Flow) (*api.FlowContext, error)
+	CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
 }
 
 type Queue interface {

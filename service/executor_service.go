@@ -10,9 +10,9 @@ import (
 )
 
 type WorkflowExecutionService struct {
-	workflowDao persistence.WorkflowDao
-	flowDao     persistence.FlowDao
-	queue       persistence.Queue
+	workflowDao    persistence.WorkflowDao
+	flowDao        persistence.FlowDao
+	actionExecutor ActionExecutor
 }
 
 func (s *WorkflowExecutionService) StartFlow(name string, data map[string]any) error {
@@ -21,10 +21,10 @@ func (s *WorkflowExecutionService) StartFlow(name string, data map[string]any) e
 		logger.Error("workflow not found", zap.String("name", name))
 		return fmt.Errorf("workflow = %s not found", name)
 	}
-	flow := wf.Convert(uuid.New().String(), data)
-	flowCtx, err := s.flowDao.CreateAndSaveFlowContext(name, flow.RootAction, flow)
+	flow := wf.Convert(uuid.New().String())
+	flowCtx, err := s.flowDao.CreateAndSaveFlowContext(name, flow.Id, flow.RootAction, data)
 	if err != nil {
 		return err
 	}
-	return flow.Actions[flow.RootAction].Execute(flowCtx)
+	return s.actionExecutor.Execute(name, flow.Actions[flow.RootAction], flowCtx)
 }
