@@ -10,12 +10,13 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Thu Jun 23 16:34:43 2022
+# Make data base, printed on Fri Jun 24 14:21:47 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
+ 
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -49,7 +50,7 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 INFOPATH = /opt/homebrew/share/info:
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-2b33b138-61c3-4791-b859-d2a6f014ea06.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-4bf65202-c445-4413-b53c-b99601fce2ca.sock
 # environment
 VSCODE_CWD = /Users/mohitkumar/code/pr_trunk/finch
 # environment
@@ -118,7 +119,6 @@ TERM_SESSION_ID = 19F3155A-CED0-4A6C-A151-5307D13593D9
 %D = $(patsubst %/,%,$(dir $%))
 # default
 MAKE_COMMAND := /Library/Developer/CommandLineTools/usr/bin/make
- 
 # environment
 TERM_PROGRAM = Apple_Terminal
 # default
@@ -138,7 +138,7 @@ MFLAGS = -Rrqp
 # environment
 TERM_PROGRAM_VERSION = 443
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.CC6B812B-7A87-40EA-9497-828435C1837C
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.CFD5AA78-ACE8-499B-8B21-84F8E0533674
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -147,6 +147,7 @@ HOMEBREW_PREFIX = /opt/homebrew
 +F = $(notdir $+)
 # environment
 HOMEBREW_REPOSITORY = /opt/homebrew
+ 
 # environment
 __CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
 # environment
@@ -170,7 +171,7 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 83996
+VSCODE_PID = 90094
 # variable set hash-table stats:
 # Load=78/1024=8%, Rehash=0, Collisions=2/101=2%
 
@@ -180,9 +181,9 @@ VSCODE_PID = 83996
 
 # Directories
 
-# . (device 16777232, inode 1451689): 16 files, no impossibilities.
+# . (device 16777232, inode 1451689): 17 files, no impossibilities.
 
-# 16 files, no impossibilities in 1 directories.
+# 17 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -237,7 +238,6 @@ compile:
 # Load=5/1024=0%, Rehash=0, Collisions=0/17=0%
 # VPATH Search Paths
 
- 
 # No `vpath' search paths.
 
 # No general (`VPATH' variable) search path.
@@ -247,6 +247,6 @@ compile:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Jun 23 16:34:43 2022
+# Finished Make data base on Fri Jun 24 14:21:47 2022
 
  
