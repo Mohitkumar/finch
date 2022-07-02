@@ -7,6 +7,11 @@ import (
 )
 
 func main() {
+	data := make(map[string]any)
+	inner := make(map[string]any)
+	data["a"] = 12
+	data["output"] = inner
+	inner["status"] = 200
 	rdConf := rest.RedisConfig{
 		Host:      "localhost",
 		Port:      6379,

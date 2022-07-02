@@ -10,17 +10,17 @@ var _ Action = new(UserAction)
 
 type UserAction struct {
 	baseAction
-	queue persistence.Queue
+	nextAction int
 }
 
-func NewUserAction(id int, Type string, name string, inputParams map[string]any, queue persistence.Queue) *UserAction {
+func NewUserAction(id int, Type string, name string, inputParams map[string]any, nextAction int, pFactory persistence.PersistenceFactory) *UserAction {
 	return &UserAction{
-		baseAction: *NewBaseAction(id, Type, name, inputParams),
-		queue:      queue,
+		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
+		nextAction: nextAction,
 	}
 }
 
-func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error {
+func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error) {
 	task := &api.Task{
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
@@ -28,8 +28,11 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error
 	}
 	d, err := proto.Marshal(task)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	ua.queue.Push(ua.GetName(), d)
-	return nil
+	ua.pFactory.GetQueue().Push(ua.GetName(), d)
+	result := &ActionResult{
+		NextAction: ua.nextAction,
+	}
+	return result, nil
 }

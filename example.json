@@ -10,14 +10,16 @@
 			"id":1,
 			"type":"system",
 			"name":"http",
-			"inputParams":{},
+			"inputParams":{
+
+			},
 			"next":2
 		},
 		{
 			"id":2,
 			"type":"system",
 			"name":"decision",
-			"expression":"$1.data.status",
+			"expression":"$1.output.status",
 			"cases":{
 				"200":3,
 				"500":5
@@ -34,3 +36,5 @@
 		}
 	]
 }
+
+{"a":22, "body":{"test":1},"1":{"output":{"z":89,"status":200}}}

@@ -12,6 +12,13 @@ func ConvertToProto(data map[string]any) map[string]*structpb.Value {
 	return out
 }
 
+func ConvertMapToStructPb(data map[string]any) *structpb.Value {
+	if val, err := structpb.NewValue(data); err == nil {
+		return val
+	}
+	return nil
+}
+
 func ConvertFromProto(data map[string]*structpb.Value) map[string]any {
 	out := make(map[string]any)
 	for k, v := range data {
