@@ -31,27 +31,27 @@ func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, a
 		CurrentAction:      int32(action),
 		Data:               util.ConvertToProto(dataMap),
 	}
-	if err := rf.saveFlowCtx(wFname, flowId, flowCtx); err != nil {
+	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) UpdateFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
+func (rf *redisFlowDao) UpdateFlowContextData(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
 	flowCtx, err := rf.GetFlowContext(wFname, flowId)
 	if err != nil {
 		return nil, err
 	}
 	data := flowCtx.GetData()
 	data[strconv.Itoa(action)] = util.ConvertMapToStructPb(dataMap)
-	if err := rf.saveFlowCtx(wFname, flowId, flowCtx); err != nil {
+	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) saveFlowCtx(wfName string, flowId string, flowCtx *api.FlowContext) error {
+func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error {
 	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wfName)
 	ctx := context.Background()
 	data, err := proto.Marshal(flowCtx)

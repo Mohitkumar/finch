@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/persistence"
-	"github.com/mohitkumar/finch/persistence/redis"
 	"go.uber.org/zap"
 )
 
@@ -24,20 +23,25 @@ type RedisConfig struct {
 }
 type Server struct {
 	Config
-	router *mux.Router
-	wfDao  persistence.WorkflowDao
+	router   *mux.Router
+	pFactory persistence.PersistenceFactory
 }
 
 func NewServer(config Config) (*Server, error) {
-	cnf := redis.Config{
+	redisConfig := persistence.RedisConfig{
 		Host:      config.Host,
 		Port:      config.RedisConfig.Port,
 		Namespace: config.Namespace,
 	}
+	cnf := persistence.Config{
+		RedisConfig: redisConfig,
+	}
+	pFactory := new(persistence.PersistenceFactory)
+	pFactory.Init(cnf, persistence.REDIS_PERSISTENCE_IMPL)
 	s := &Server{
-		Config: config,
-		router: mux.NewRouter(),
-		wfDao:  redis.NewRedisWorkflowDao(cnf),
+		Config:   config,
+		router:   mux.NewRouter(),
+		pFactory: *pFactory,
 	}
 
 	return s, nil

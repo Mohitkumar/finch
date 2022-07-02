@@ -17,7 +17,7 @@ type decisionAction struct {
 	cases      map[string]int
 }
 
-func NewDecisionAction(id int, Type string, name string, inputParams map[string]any, expression string, pFactory persistence.PersistenceFactory) *decisionAction {
+func NewDecisionAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory persistence.PersistenceFactory) *decisionAction {
 	return &decisionAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		expression: expression,
@@ -39,6 +39,7 @@ func (d *decisionAction) Execute(wfName string, flowContext *api.FlowContext) (*
 	}
 	result := &ActionResult{
 		NextAction: nextAction,
+		ActionType: ACTION_TYPE_SYSTEM,
 	}
 	return result, nil
 }

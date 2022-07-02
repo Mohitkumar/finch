@@ -8,13 +8,6 @@ import (
 	"github.com/mohitkumar/finch/persistence"
 )
 
-type FlowType string
-
-const (
-	FLOW_TYPE_SYSTEM FlowType = "SYSTEM"
-	FLOW_TYPE_USER   FlowType = "USER"
-)
-
 type Flow struct {
 	Id         string
 	RootAction int
@@ -24,15 +17,16 @@ type Flow struct {
 func Convert(wf *model.Workflow, id string, pFactory persistence.PersistenceFactory) Flow {
 	actionMap := make(map[int]action.Action)
 	for _, actionDef := range wf.Actions {
-		var flAct action.Action = action.NewBaseAction(actionDef.Id, actionDef.Type,
+		actionType := action.ToActionType(actionDef.Type)
+		var flAct action.Action = action.NewBaseAction(actionDef.Id, actionType,
 			actionDef.Name, actionDef.InputParams, pFactory)
-		if actionDef.Type == string(FLOW_TYPE_SYSTEM) {
+		if actionType == action.ACTION_TYPE_SYSTEM {
 			if strings.EqualFold(actionDef.Name, "decision") {
-				flAct = action.NewDecisionAction(actionDef.Id, actionDef.Type,
+				flAct = action.NewDecisionAction(actionDef.Id, actionType,
 					actionDef.Name, actionDef.InputParams, actionDef.Expression, pFactory)
 			}
 		} else {
-			flAct = action.NewUserAction(actionDef.Id, actionDef.Type,
+			flAct = action.NewUserAction(actionDef.Id, actionType,
 				actionDef.Name, actionDef.InputParams, actionDef.Next, pFactory)
 		}
 		actionMap[actionDef.Id] = flAct

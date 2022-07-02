@@ -43,12 +43,13 @@ func (s *WorkflowExecutionService) HandleTaskResult(taskResult *api.TaskResult) 
 			return fmt.Errorf("workflow = %s not found", wfName)
 		}
 		flow := flow.Convert(wf, wfId, s.pFactory)
-		flowCtx, err := s.pFactory.GetFlowDao().UpdateFlowContext(wfId, wfId, int(taskResult.ActionId), data)
+		flowCtx, err := s.pFactory.GetFlowDao().UpdateFlowContextData(wfName, wfId, int(taskResult.ActionId), data)
 		if err != nil {
 			return err
 		}
-		s.executor.StartExecution(wfName, flow, flowCtx)
+		s.executor.ExecuteAction(wfName, int(flowCtx.NextAction), flow, flowCtx)
 	case api.TaskResult_FAIL:
+		//retry logic
 	}
 	return nil
 }

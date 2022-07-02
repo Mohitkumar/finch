@@ -7,10 +7,22 @@ import (
 	"github.com/mohitkumar/finch/persistence"
 )
 
+type ActionType string
+
+const ACTION_TYPE_SYSTEM ActionType = "SYSTEM"
+const ACTION_TYPE_USER ActionType = "USER"
+
+func ToActionType(at string) ActionType {
+	if at == "SYSTEM" {
+		return ACTION_TYPE_SYSTEM
+	}
+	return ACTION_TYPE_USER
+}
+
 type Action interface {
 	GetId() int
 	GetName() string
-	GetType() string
+	GetType() ActionType
 	GetInputParams() map[string]any
 	Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error)
 }
@@ -19,13 +31,13 @@ var _ Action = new(baseAction)
 
 type baseAction struct {
 	id          int
-	actType     string
+	actType     ActionType
 	name        string
 	inputParams map[string]any
 	pFactory    persistence.PersistenceFactory
 }
 
-func NewBaseAction(id int, Type string, name string, inputParams map[string]any, pFactory persistence.PersistenceFactory) *baseAction {
+func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory persistence.PersistenceFactory) *baseAction {
 	return &baseAction{
 		id:          id,
 		name:        name,
@@ -41,7 +53,7 @@ func (ba *baseAction) GetId() int {
 func (ba *baseAction) GetName() string {
 	return ba.name
 }
-func (ba *baseAction) GetType() string {
+func (ba *baseAction) GetType() ActionType {
 	return ba.actType
 }
 func (ba *baseAction) GetInputParams() map[string]any {
@@ -55,4 +67,5 @@ func (ba *baseAction) Execute(wfName string, flowContext *api.FlowContext) (*Act
 type ActionResult struct {
 	NextAction int
 	Data       map[string]any
+	ActionType ActionType
 }

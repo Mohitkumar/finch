@@ -26,8 +26,9 @@ type WorkflowDao interface {
 
 type FlowDao interface {
 	CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
-	UpdateFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
+	UpdateFlowContextData(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
 	GetFlowContext(wfName string, flowId string) (*api.FlowContext, error)
+	SaveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error
 }
 
 type Queue interface {
@@ -53,8 +54,8 @@ type RedisConfig struct {
 type InmemConfig struct {
 }
 type Config struct {
-	RedisConnfig RedisConfig
-	InmemConfig  InmemConfig
+	RedisConfig RedisConfig
+	InmemConfig InmemConfig
 }
 type PersistenceFactory struct {
 	initialized bool
@@ -71,9 +72,9 @@ func (p *PersistenceFactory) Init(config Config, pImpl PersistenceImplementation
 	switch pImpl {
 	case REDIS_PERSISTENCE_IMPL:
 		rdConf := &rd.Config{
-			Host:      config.RedisConnfig.Host,
-			Port:      config.RedisConnfig.Port,
-			Namespace: config.RedisConnfig.Namespace,
+			Host:      config.RedisConfig.Host,
+			Port:      config.RedisConfig.Port,
+			Namespace: config.RedisConfig.Namespace,
 		}
 		p.wfDao = rd.NewRedisWorkflowDao(*rdConf)
 		p.flowDao = rd.NewRedisFlowDao(*rdConf)

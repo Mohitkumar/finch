@@ -13,7 +13,7 @@ type UserAction struct {
 	nextAction int
 }
 
-func NewUserAction(id int, Type string, name string, inputParams map[string]any, nextAction int, pFactory persistence.PersistenceFactory) *UserAction {
+func NewUserAction(id int, Type ActionType, name string, inputParams map[string]any, nextAction int, pFactory persistence.PersistenceFactory) *UserAction {
 	return &UserAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		nextAction: nextAction,
@@ -33,6 +33,7 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) (*Act
 	ua.pFactory.GetQueue().Push(ua.GetName(), d)
 	result := &ActionResult{
 		NextAction: ua.nextAction,
+		ActionType: ACTION_TYPE_USER,
 	}
 	return result, nil
 }
