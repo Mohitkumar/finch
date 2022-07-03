@@ -7,37 +7,43 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mohitkumar/finch/logger"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 	"go.uber.org/zap"
 )
 
+type StorageImplementation string
+
+const STORAGE_IMPL_REDIS StorageImplementation = "redis"
+const STORAGE_IMPL_INMEM StorageImplementation = "memory"
+
 type Config struct {
 	RedisConfig
-	Port int
+	Port        int
+	StorageImpl StorageImplementation
 }
 
 type RedisConfig struct {
 	Host      string
-	Port      uint16
+	Port      int
 	Namespace string
 }
 type Server struct {
 	Config
 	router   *mux.Router
-	pFactory persistence.PersistenceFactory
+	pFactory factory.PersistenceFactory
 }
 
 func NewServer(config Config) (*Server, error) {
-	redisConfig := persistence.RedisConfig{
+	redisConfig := factory.RedisConfig{
 		Host:      config.Host,
 		Port:      config.RedisConfig.Port,
 		Namespace: config.Namespace,
 	}
-	cnf := persistence.Config{
+	cnf := factory.Config{
 		RedisConfig: redisConfig,
 	}
-	pFactory := new(persistence.PersistenceFactory)
-	pFactory.Init(cnf, persistence.REDIS_PERSISTENCE_IMPL)
+	pFactory := new(factory.PersistenceFactory)
+	pFactory.Init(cnf, factory.REDIS_PERSISTENCE_IMPL)
 	s := &Server{
 		Config:   config,
 		router:   mux.NewRouter(),
@@ -60,6 +66,9 @@ func (s *Server) Start() error {
 	return nil
 }
 
+func (s *Server) Stop() error {
+	return nil
+}
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.Info(r.RequestURI)

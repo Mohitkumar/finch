@@ -40,3 +40,17 @@ message TaskResult{
     }
     Status status = 5;
 }
+
+message TaskPollRequest{
+    string taskType = 1;
+}
+
+message TaskResultPushResponse{
+    bool status = 1;
+}
+
+service TaskService{
+    rpc Poll(TaskPollRequest) returns (Task){}
+    rpc PollStream(TaskPollRequest) returns (stream Task){}
+    rpc Push(TaskResult) returns (TaskResultPushResponse) {}
+}

@@ -2,7 +2,7 @@ package action
 
 import (
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -13,14 +13,14 @@ type UserAction struct {
 	nextAction int
 }
 
-func NewUserAction(id int, Type ActionType, name string, inputParams map[string]any, nextAction int, pFactory persistence.PersistenceFactory) *UserAction {
+func NewUserAction(id int, Type ActionType, name string, inputParams map[string]any, nextAction int, pFactory factory.PersistenceFactory) *UserAction {
 	return &UserAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		nextAction: nextAction,
 	}
 }
 
-func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error) {
+func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error {
 	task := &api.Task{
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
@@ -28,12 +28,10 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) (*Act
 	}
 	d, err := proto.Marshal(task)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	flowContext.NextAction = int32(ua.nextAction)
+	ua.pFactory.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
 	ua.pFactory.GetQueue().Push(ua.GetName(), d)
-	result := &ActionResult{
-		NextAction: ua.nextAction,
-		ActionType: ACTION_TYPE_USER,
-	}
-	return result, nil
+	return nil
 }

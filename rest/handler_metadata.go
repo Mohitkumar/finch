@@ -17,7 +17,7 @@ func (s *Server) HandleCreateFlow(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	defer r.Body.Close()
-	err := s.wfDao.Save(flow)
+	err := s.pFactory.GetWorkflowDao().Save(flow)
 	if err != nil {
 		logger.Error("error creating workflow", zap.Error(err))
 		respondWithError(w, http.StatusBadRequest, "error creating workflow")
@@ -32,7 +32,7 @@ func (s *Server) HandleGetFlow(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	wf, err := s.wfDao.Get(flowName)
+	wf, err := s.pFactory.GetWorkflowDao().Get(flowName)
 	if err != nil {
 		logger.Info("wokflow does not exist", zap.String("name", flowName))
 		respondWithError(w, http.StatusBadRequest, "wokflow does not exist")

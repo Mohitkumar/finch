@@ -7,13 +7,13 @@ import (
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/flow"
 	"github.com/mohitkumar/finch/logger"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
 )
 
 type WorkflowExecutionService struct {
-	pFactory persistence.PersistenceFactory
+	pFactory factory.PersistenceFactory
 	executor *WorkflowExecutor
 }
 

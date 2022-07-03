@@ -402,6 +402,100 @@ func (x *TaskResult) GetStatus() TaskResult_Status {
 	return TaskResult_SUCCESS
 }
 
+type TaskPollRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskType string `protobuf:"bytes,1,opt,name=taskType,proto3" json:"taskType,omitempty"`
+}
+
+func (x *TaskPollRequest) Reset() {
+	*x = TaskPollRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_flow_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TaskPollRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskPollRequest) ProtoMessage() {}
+
+func (x *TaskPollRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_flow_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskPollRequest.ProtoReflect.Descriptor instead.
+func (*TaskPollRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_flow_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *TaskPollRequest) GetTaskType() string {
+	if x != nil {
+		return x.TaskType
+	}
+	return ""
+}
+
+type TaskResultPushResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Status bool `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+}
+
+func (x *TaskResultPushResponse) Reset() {
+	*x = TaskResultPushResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_v1_flow_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TaskResultPushResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskResultPushResponse) ProtoMessage() {}
+
+func (x *TaskResultPushResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_flow_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskResultPushResponse.ProtoReflect.Descriptor instead.
+func (*TaskResultPushResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_flow_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TaskResultPushResponse) GetStatus() bool {
+	if x != nil {
+		return x.Status
+	}
+	return false
+}
+
 var File_api_v1_flow_proto protoreflect.FileDescriptor
 
 var file_api_v1_flow_proto_rawDesc = []byte{
@@ -470,9 +564,24 @@ var file_api_v1_flow_proto_rawDesc = []byte{
 	0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
 	0x38, 0x01, 0x22, 0x1f, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0b, 0x0a, 0x07,
 	0x53, 0x55, 0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x46, 0x41, 0x49,
-	0x4c, 0x10, 0x01, 0x42, 0x1e, 0x5a, 0x1c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x6d, 0x6f, 0x68, 0x69, 0x74, 0x6b, 0x75, 0x6d, 0x61, 0x72, 0x2f, 0x61, 0x70, 0x69,
-	0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x4c, 0x10, 0x01, 0x22, 0x2d, 0x0a, 0x0f, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x6f, 0x6c, 0x6c, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x74, 0x61, 0x73, 0x6b, 0x54, 0x79,
+	0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x74, 0x61, 0x73, 0x6b, 0x54, 0x79,
+	0x70, 0x65, 0x22, 0x30, 0x0a, 0x16, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x50, 0x75, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x32, 0x8b, 0x01, 0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x12, 0x21, 0x0a, 0x04, 0x50, 0x6f, 0x6c, 0x6c, 0x12, 0x10, 0x2e, 0x54,
+	0x61, 0x73, 0x6b, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x05,
+	0x2e, 0x54, 0x61, 0x73, 0x6b, 0x22, 0x00, 0x12, 0x29, 0x0a, 0x0a, 0x50, 0x6f, 0x6c, 0x6c, 0x53,
+	0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x10, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x6f, 0x6c, 0x6c,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x05, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x22, 0x00,
+	0x30, 0x01, 0x12, 0x2e, 0x0a, 0x04, 0x50, 0x75, 0x73, 0x68, 0x12, 0x0b, 0x2e, 0x54, 0x61, 0x73,
+	0x6b, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x1a, 0x17, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65,
+	0x73, 0x75, 0x6c, 0x74, 0x50, 0x75, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x42, 0x1e, 0x5a, 0x1c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x6d, 0x6f, 0x68, 0x69, 0x74, 0x6b, 0x75, 0x6d, 0x61, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x5f,
+	0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -488,7 +597,7 @@ func file_api_v1_flow_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_flow_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_api_v1_flow_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_api_v1_flow_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_api_v1_flow_proto_goTypes = []interface{}{
 	(FlowContext_WorkflowState)(0), // 0: FlowContext.WorkflowState
 	(FlowContext_ActionState)(0),   // 1: FlowContext.ActionState
@@ -496,26 +605,34 @@ var file_api_v1_flow_proto_goTypes = []interface{}{
 	(*FlowContext)(nil),            // 3: FlowContext
 	(*Task)(nil),                   // 4: Task
 	(*TaskResult)(nil),             // 5: TaskResult
-	nil,                            // 6: FlowContext.DataEntry
-	nil,                            // 7: Task.DataEntry
-	nil,                            // 8: TaskResult.DataEntry
-	(*structpb.Value)(nil),         // 9: google.protobuf.Value
+	(*TaskPollRequest)(nil),        // 6: TaskPollRequest
+	(*TaskResultPushResponse)(nil), // 7: TaskResultPushResponse
+	nil,                            // 8: FlowContext.DataEntry
+	nil,                            // 9: Task.DataEntry
+	nil,                            // 10: TaskResult.DataEntry
+	(*structpb.Value)(nil),         // 11: google.protobuf.Value
 }
 var file_api_v1_flow_proto_depIdxs = []int32{
-	0, // 0: FlowContext.workflowState:type_name -> FlowContext.WorkflowState
-	1, // 1: FlowContext.currentActionState:type_name -> FlowContext.ActionState
-	6, // 2: FlowContext.data:type_name -> FlowContext.DataEntry
-	7, // 3: Task.data:type_name -> Task.DataEntry
-	8, // 4: TaskResult.data:type_name -> TaskResult.DataEntry
-	2, // 5: TaskResult.status:type_name -> TaskResult.Status
-	9, // 6: FlowContext.DataEntry.value:type_name -> google.protobuf.Value
-	9, // 7: Task.DataEntry.value:type_name -> google.protobuf.Value
-	9, // 8: TaskResult.DataEntry.value:type_name -> google.protobuf.Value
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	0,  // 0: FlowContext.workflowState:type_name -> FlowContext.WorkflowState
+	1,  // 1: FlowContext.currentActionState:type_name -> FlowContext.ActionState
+	8,  // 2: FlowContext.data:type_name -> FlowContext.DataEntry
+	9,  // 3: Task.data:type_name -> Task.DataEntry
+	10, // 4: TaskResult.data:type_name -> TaskResult.DataEntry
+	2,  // 5: TaskResult.status:type_name -> TaskResult.Status
+	11, // 6: FlowContext.DataEntry.value:type_name -> google.protobuf.Value
+	11, // 7: Task.DataEntry.value:type_name -> google.protobuf.Value
+	11, // 8: TaskResult.DataEntry.value:type_name -> google.protobuf.Value
+	6,  // 9: TaskService.Poll:input_type -> TaskPollRequest
+	6,  // 10: TaskService.PollStream:input_type -> TaskPollRequest
+	5,  // 11: TaskService.Push:input_type -> TaskResult
+	4,  // 12: TaskService.Poll:output_type -> Task
+	4,  // 13: TaskService.PollStream:output_type -> Task
+	7,  // 14: TaskService.Push:output_type -> TaskResultPushResponse
+	12, // [12:15] is the sub-list for method output_type
+	9,  // [9:12] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_flow_proto_init() }
@@ -560,6 +677,30 @@ func file_api_v1_flow_proto_init() {
 				return nil
 			}
 		}
+		file_api_v1_flow_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TaskPollRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_v1_flow_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TaskResultPushResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -567,9 +708,9 @@ func file_api_v1_flow_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_v1_flow_proto_rawDesc,
 			NumEnums:      3,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_api_v1_flow_proto_goTypes,
 		DependencyIndexes: file_api_v1_flow_proto_depIdxs,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 )
 
 type ActionType string
@@ -24,7 +24,7 @@ type Action interface {
 	GetName() string
 	GetType() ActionType
 	GetInputParams() map[string]any
-	Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error)
+	Execute(wfName string, flowContext *api.FlowContext) error
 }
 
 var _ Action = new(baseAction)
@@ -34,10 +34,10 @@ type baseAction struct {
 	actType     ActionType
 	name        string
 	inputParams map[string]any
-	pFactory    persistence.PersistenceFactory
+	pFactory    factory.PersistenceFactory
 }
 
-func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory persistence.PersistenceFactory) *baseAction {
+func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory factory.PersistenceFactory) *baseAction {
 	return &baseAction{
 		id:          id,
 		name:        name,
@@ -60,12 +60,6 @@ func (ba *baseAction) GetInputParams() map[string]any {
 	return ba.inputParams
 }
 
-func (ba *baseAction) Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error) {
-	return nil, fmt.Errorf("can not execute")
-}
-
-type ActionResult struct {
-	NextAction int
-	Data       map[string]any
-	ActionType ActionType
+func (ba *baseAction) Execute(wfName string, flowContext *api.FlowContext) error {
+	return fmt.Errorf("can not execute")
 }

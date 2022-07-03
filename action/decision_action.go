@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/util"
 	"github.com/yalp/jsonpath"
 )
@@ -17,18 +17,18 @@ type decisionAction struct {
 	cases      map[string]int
 }
 
-func NewDecisionAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory persistence.PersistenceFactory) *decisionAction {
+func NewDecisionAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory factory.PersistenceFactory) *decisionAction {
 	return &decisionAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		expression: expression,
 	}
 }
 
-func (d *decisionAction) Execute(wfName string, flowContext *api.FlowContext) (*ActionResult, error) {
+func (d *decisionAction) Execute(wfName string, flowContext *api.FlowContext) error {
 	dataMap := util.ConvertFromProto(flowContext.Data)
 	expressionValue, err := jsonpath.Read(dataMap, d.expression)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	var nextAction int
 	switch expValue := expressionValue.(type) {
@@ -37,9 +37,7 @@ func (d *decisionAction) Execute(wfName string, flowContext *api.FlowContext) (*
 	case string:
 		nextAction = d.cases[expValue]
 	}
-	result := &ActionResult{
-		NextAction: nextAction,
-		ActionType: ACTION_TYPE_SYSTEM,
-	}
-	return result, nil
+	flowContext.NextAction = int32(nextAction)
+	d.pFactory.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
+	return nil
 }

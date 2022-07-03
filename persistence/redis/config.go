@@ -2,7 +2,7 @@ package redis
 
 type Config struct {
 	Host      string
-	Port      uint16
+	Port      int
 	IsCluster bool
 	Namespace string
 }

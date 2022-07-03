@@ -5,7 +5,7 @@ import (
 
 	"github.com/mohitkumar/finch/action"
 	"github.com/mohitkumar/finch/model"
-	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/persistence/factory"
 )
 
 type Flow struct {
@@ -14,7 +14,7 @@ type Flow struct {
 	Actions    map[int]action.Action
 }
 
-func Convert(wf *model.Workflow, id string, pFactory persistence.PersistenceFactory) Flow {
+func Convert(wf *model.Workflow, id string, pFactory factory.PersistenceFactory) Flow {
 	actionMap := make(map[int]action.Action)
 	for _, actionDef := range wf.Actions {
 		actionType := action.ToActionType(actionDef.Type)
