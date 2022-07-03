@@ -17,7 +17,7 @@ type decisionAction struct {
 	cases      map[string]int
 }
 
-func NewDecisionAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory factory.PersistenceFactory) *decisionAction {
+func NewDecisionAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory *factory.PersistenceFactory) *decisionAction {
 	return &decisionAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		expression: expression,

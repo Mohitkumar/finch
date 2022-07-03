@@ -6,9 +6,11 @@ require (
 	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0
+	go.opencensus.io v0.23.0
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.28.0
@@ -18,6 +20,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

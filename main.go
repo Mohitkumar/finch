@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/mohitkumar/finch/rest"
+	"github.com/mohitkumar/finch/agent"
+	"github.com/mohitkumar/finch/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type cfg struct {
-	rest.Config
+	config.Config
 }
 type cli struct {
 	cfg cfg
@@ -48,26 +48,25 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 	c.cfg.RedisConfig.Host = viper.GetString("redis-host")
 	c.cfg.RedisConfig.Port = viper.GetInt("redis-port")
 	c.cfg.RedisConfig.Namespace = viper.GetString("namespace")
-	c.cfg.Port = viper.GetInt("http-port")
-
+	c.cfg.HttpPort = viper.GetInt("http-port")
+	c.cfg.GrpcPort = viper.GetInt("grpc-port")
 	return nil
 }
 
 func (c *cli) run(cmd *cobra.Command, args []string) error {
 	var err error
-	server, err := rest.NewServer(c.cfg.Config)
+	agent, err := agent.New(c.cfg.Config)
 	if err != nil {
 		panic(err)
 	}
-	err = server.Start()
-
+	err = agent.Start()
 	if err != nil {
-		fmt.Println("could not start server")
+		panic(err)
 	}
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
 	<-sigc
-	return server.Stop()
+	return agent.Shutdown()
 }
 
 func main() {

@@ -13,7 +13,7 @@ type UserAction struct {
 	nextAction int
 }
 
-func NewUserAction(id int, Type ActionType, name string, inputParams map[string]any, nextAction int, pFactory factory.PersistenceFactory) *UserAction {
+func NewUserAction(id int, Type ActionType, name string, inputParams map[string]any, nextAction int, pFactory *factory.PersistenceFactory) *UserAction {
 	return &UserAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		nextAction: nextAction,

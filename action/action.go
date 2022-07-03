@@ -34,10 +34,10 @@ type baseAction struct {
 	actType     ActionType
 	name        string
 	inputParams map[string]any
-	pFactory    factory.PersistenceFactory
+	pFactory    *factory.PersistenceFactory
 }
 
-func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory factory.PersistenceFactory) *baseAction {
+func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory *factory.PersistenceFactory) *baseAction {
 	return &baseAction{
 		id:          id,
 		name:        name,

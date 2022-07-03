@@ -11,56 +11,31 @@ import (
 	"go.uber.org/zap"
 )
 
-type StorageImplementation string
-
-const STORAGE_IMPL_REDIS StorageImplementation = "redis"
-const STORAGE_IMPL_INMEM StorageImplementation = "memory"
-
-type Config struct {
-	RedisConfig
-	Port        int
-	StorageImpl StorageImplementation
-}
-
-type RedisConfig struct {
-	Host      string
-	Port      int
-	Namespace string
-}
 type Server struct {
-	Config
+	HttpPort int
 	router   *mux.Router
-	pFactory factory.PersistenceFactory
+	pFactory *factory.PersistenceFactory
 }
 
-func NewServer(config Config) (*Server, error) {
-	redisConfig := factory.RedisConfig{
-		Host:      config.Host,
-		Port:      config.RedisConfig.Port,
-		Namespace: config.Namespace,
-	}
-	cnf := factory.Config{
-		RedisConfig: redisConfig,
-	}
-	pFactory := new(factory.PersistenceFactory)
-	pFactory.Init(cnf, factory.REDIS_PERSISTENCE_IMPL)
+func NewServer(httpPort int, pFactory *factory.PersistenceFactory) (*Server, error) {
+
 	s := &Server{
-		Config:   config,
+		HttpPort: httpPort,
 		router:   mux.NewRouter(),
-		pFactory: *pFactory,
+		pFactory: pFactory,
 	}
 
 	return s, nil
 }
 
 func (s *Server) Start() error {
-	logger.Info("startting http server on", zap.Int("port", s.Port))
+	logger.Info("startting http server on", zap.Int("port", s.HttpPort))
 	s.router.HandleFunc("/workflow", s.HandleCreateFlow).Methods(http.MethodPost)
 	s.router.HandleFunc("/workflow/{name}", s.HandleGetFlow).Methods(http.MethodGet)
 
 	s.router.Use(loggingMiddleware)
 	http.Handle("/", s.router)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.router); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.HttpPort), s.router); err != nil {
 		return err
 	}
 	return nil

@@ -14,7 +14,7 @@ type Flow struct {
 	Actions    map[int]action.Action
 }
 
-func Convert(wf *model.Workflow, id string, pFactory factory.PersistenceFactory) Flow {
+func Convert(wf *model.Workflow, id string, pFactory *factory.PersistenceFactory) Flow {
 	actionMap := make(map[int]action.Action)
 	for _, actionDef := range wf.Actions {
 		actionType := action.ToActionType(actionDef.Type)
