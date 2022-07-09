@@ -6,6 +6,7 @@ import (
 
 	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
+	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
 )
 
@@ -24,11 +25,18 @@ func (pw *PollerWorker) PollAndExecute() error {
 	if err != nil {
 		return err
 	}
-	result, err := pw.worker.Execute(task)
+	result, err := pw.worker.Execute(util.ConvertFromProto(task.Data))
 	if err != nil {
 		return err
 	}
-	_, err = pw.client.GetApiClient().Push(ctx, result)
+
+	taskResult := &api_v1.TaskResult{
+		WorkflowName: task.WorkflowName,
+		FlowId:       task.FlowId,
+		ActionId:     task.ActionId,
+		Data:         util.ConvertToProto(result),
+	}
+	_, err = pw.client.GetApiClient().Push(ctx, taskResult)
 	if err != nil {
 		return err
 	}

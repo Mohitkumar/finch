@@ -10,7 +10,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Sat Jul  9 09:02:27 2022
+# Make data base, printed on Sat Jul  9 15:59:11 2022
 
 # Variables
 
@@ -49,12 +49,11 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 INFOPATH = /opt/homebrew/share/info:
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-4287d8a1-bfa6-4072-88de-ec42a8b28331.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/vscode-ipc-f5ade3fb-5514-495b-abec-cda368e0aba1.sock
 # environment
 VSCODE_CWD = /Users/mohitkumar/code/pr_trunk/finch
 # environment
 GOPROXY = https://proxy.golang.org,direct
- 
 # environment
 PATH = /Users/mohitkumar/apache-maven-3.6.3/bin:/opt/homebrew/opt/mysql@5.7/bin:/opt/homebrew/opt/node@16/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
 # environment
@@ -113,11 +112,10 @@ JAVA_HOME = /Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
 MAKE_VERSION := 3.81
 # environment
 USER = mohitkumar
- 
 # makefile
 .DEFAULT_GOAL := compile
 # environment
-TERM_SESSION_ID = 72025B55-512F-4FB1-AE08-7573A3349971
+TERM_SESSION_ID = 94CBB5BF-7B84-4CE5-9A12-4BCC1CC5DD10
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # default
@@ -141,7 +139,7 @@ MFLAGS = -Rrqp
 # environment
 TERM_PROGRAM_VERSION = 443
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.F4F3DDD9-0727-4150-8F60-B9B7B944281F
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.3191226.3191232.9CF6593A-1698-469E-86E9-FD3306BA3940
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -185,7 +183,6 @@ VSCODE_PID = 83353
 
 # . (device 16777233, inode 1451689): 24 files, no impossibilities.
 
- 
 # 24 files, no impossibilities in 1 directories.
 
 # Implicit Rules
@@ -250,6 +247,6 @@ compile:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Sat Jul  9 09:02:27 2022
+# Finished Make data base on Sat Jul  9 15:59:11 2022
 
  

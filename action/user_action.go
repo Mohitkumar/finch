@@ -25,6 +25,7 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
 		Data:         flowContext.Data,
+		ActionId:     flowContext.CurrentAction,
 	}
 	d, err := proto.Marshal(task)
 	if err != nil {
