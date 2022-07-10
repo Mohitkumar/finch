@@ -26,6 +26,7 @@ func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("namespace", "finch", "namespace used in storage")
 	cmd.Flags().Int("http-port", 8080, "htt port for rest endpoints")
 	cmd.Flags().Int("grpc-port", 8099, "grpc port for worker connection")
+	cmd.Flags().String("storage-impl", "redis", "implementation of underline storage")
 	return viper.BindPFlags(cmd.Flags())
 }
 
@@ -50,6 +51,7 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 	c.cfg.RedisConfig.Namespace = viper.GetString("namespace")
 	c.cfg.HttpPort = viper.GetInt("http-port")
 	c.cfg.GrpcPort = viper.GetInt("grpc-port")
+	c.cfg.StorageImpl = config.StorageImplementation(viper.GetString("storage-impl"))
 	return nil
 }
 
