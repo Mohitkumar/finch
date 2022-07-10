@@ -3,7 +3,7 @@ module github.com/mohitkumar/finch/worker
 go 1.18
 
 require (
-	github.com/mohitkumar/finch v0.0.0-20220703100812-b55f777902ad
+	github.com/mohitkumar/finch v0.0.2
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.47.0
 )
@@ -18,3 +18,5 @@ require (
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
+
+replace github.com/mohitkumar/finch => ../
