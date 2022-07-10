@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	api_v1 "github.com/mohitkumar/finch/api/v1"
@@ -10,13 +11,14 @@ import (
 	"go.uber.org/zap"
 )
 
-type PollerWorker struct {
+type pollerWorker struct {
 	worker Worker
-	client *Client
+	client *client
 	stop   chan struct{}
+	wg     *sync.WaitGroup
 }
 
-func (pw *PollerWorker) PollAndExecute() error {
+func (pw *pollerWorker) PollAndExecute() error {
 	ctx := context.Background()
 	req := &api_v1.TaskPollRequest{
 		TaskType: pw.worker.GetName(),
@@ -43,9 +45,11 @@ func (pw *PollerWorker) PollAndExecute() error {
 	return nil
 }
 
-func (pw *PollerWorker) Start() {
+func (pw *pollerWorker) Start() {
 	ticker := time.NewTicker(time.Duration(pw.worker.GetPollInterval()) * time.Second)
+	pw.wg.Add(1)
 	go func() {
+		defer pw.wg.Done()
 		for {
 			select {
 			case <-ticker.C:

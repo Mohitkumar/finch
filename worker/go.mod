@@ -3,7 +3,7 @@ module github.com/mohitkumar/finch/worker
 go 1.18
 
 require (
-	github.com/mohitkumar/finch v0.0.2
+	github.com/mohitkumar/finch v0.0.3
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.47.0
 )

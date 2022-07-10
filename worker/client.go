@@ -6,24 +6,24 @@ import (
 	api "github.com/mohitkumar/finch/api/v1"
 )
 
-type Client struct {
+type client struct {
 	conn *grpc.ClientConn
 }
 
-func NewClient(serverAddress string) (*Client, error) {
+func NewClient(serverAddress string) (*client, error) {
 	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-	return &Client{
+	return &client{
 		conn: conn,
 	}, nil
 }
 
-func (c *Client) Close() error {
+func (c *client) Close() error {
 	return c.conn.Close()
 }
 
-func (c *Client) GetApiClient() api.TaskServiceClient {
+func (c *client) GetApiClient() api.TaskServiceClient {
 	return api.NewTaskServiceClient(c.conn)
 }
