@@ -31,10 +31,12 @@ func (tp *TaskPoller) Start() {
 			panic(err)
 		}
 		pw := &pollerWorker{
-			worker: w.worker,
-			stop:   w.stop,
-			client: client,
-			wg:     tp.wg,
+			worker:                   w.worker,
+			stop:                     w.stop,
+			client:                   client,
+			wg:                       tp.wg,
+			maxRetryBeforeResultPush: tp.Config.MaxRetryBeforeResultPush,
+			retryIntervalSecond:      tp.Config.RetryIntervalSecond,
 		}
 		pw.Start()
 	}

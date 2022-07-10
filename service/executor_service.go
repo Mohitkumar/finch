@@ -27,5 +27,6 @@ func (s *WorkflowExecutionService) StartFlow(name string, data map[string]any) e
 	if err != nil {
 		return err
 	}
+	logger.Info("starting workflow", zap.String("workflow", name), zap.Int("rootAction", flow.RootAction))
 	return s.taskExecutor.ExecuteAction(name, flow.RootAction, flow, flowCtx)
 }

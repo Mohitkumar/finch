@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	backoff "github.com/cenkalti/backoff/v4"
 	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/util"
@@ -12,10 +13,12 @@ import (
 )
 
 type pollerWorker struct {
-	worker Worker
-	client *client
-	stop   chan struct{}
-	wg     *sync.WaitGroup
+	worker                   Worker
+	client                   *client
+	stop                     chan struct{}
+	maxRetryBeforeResultPush int
+	retryIntervalSecond      int
+	wg                       *sync.WaitGroup
 }
 
 func (pw *pollerWorker) PollAndExecute() error {
@@ -28,17 +31,31 @@ func (pw *pollerWorker) PollAndExecute() error {
 		return err
 	}
 	result, err := pw.worker.Execute(util.ConvertFromProto(task.Data))
+	var taskResult *api_v1.TaskResult
 	if err != nil {
-		return err
+		taskResult = &api_v1.TaskResult{
+			WorkflowName: task.WorkflowName,
+			FlowId:       task.FlowId,
+			ActionId:     task.ActionId,
+			Status:       api_v1.TaskResult_SUCCESS,
+		}
+	} else {
+		taskResult = &api_v1.TaskResult{
+			WorkflowName: task.WorkflowName,
+			FlowId:       task.FlowId,
+			ActionId:     task.ActionId,
+			Data:         util.ConvertToProto(result),
+			Status:       api_v1.TaskResult_SUCCESS,
+		}
 	}
-
-	taskResult := &api_v1.TaskResult{
-		WorkflowName: task.WorkflowName,
-		FlowId:       task.FlowId,
-		ActionId:     task.ActionId,
-		Data:         util.ConvertToProto(result),
-	}
-	_, err = pw.client.GetApiClient().Push(ctx, taskResult)
+	b := backoff.WithMaxRetries(backoff.NewConstantBackOff(time.Duration(pw.retryIntervalSecond)*time.Second), uint64(pw.maxRetryBeforeResultPush))
+	err = backoff.Retry(func() error {
+		_, err := pw.client.GetApiClient().Push(ctx, taskResult)
+		if err != nil {
+			return err
+		}
+		return nil
+	}, b)
 	if err != nil {
 		return err
 	}
