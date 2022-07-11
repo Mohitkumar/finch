@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
@@ -12,7 +13,7 @@ type PollError struct {
 }
 
 func (e PollError) GRPCStatus() *status.Status {
-	st := status.New(404, fmt.Sprintf("no task available for execution in queue %s", e.QueueName))
+	st := status.New(codes.NotFound, fmt.Sprintf("no task available for execution in queue %s", e.QueueName))
 	msg := fmt.Sprintf("no task available for execution in queue %s", e.QueueName)
 	d := &errdetails.LocalizedMessage{
 		Locale:  "en-US",
@@ -32,7 +33,7 @@ func (e PollError) Error() string {
 type StorageLayerError struct{}
 
 func (e StorageLayerError) GRPCStatus() *status.Status {
-	st := status.New(500, fmt.Sprintf("error in underline storage layer"))
+	st := status.New(codes.Internal, fmt.Sprintf("error in underline storage layer"))
 	msg := "error in underline storage layer"
 	d := &errdetails.LocalizedMessage{
 		Locale:  "en-US",

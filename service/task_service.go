@@ -18,10 +18,10 @@ type TaskExecutionService struct {
 	taskExecutor *executor.TaskExecutor
 }
 
-func NewTaskExecutionService(pFactory *factory.PersistenceFactory, taskExecutor *executor.TaskExecutor) *TaskExecutionService {
+func NewTaskExecutionService(pFactory *factory.PersistenceFactory) *TaskExecutionService {
 	return &TaskExecutionService{
 		pFactory:     pFactory,
-		taskExecutor: taskExecutor,
+		taskExecutor: executor.NewTaskExecutor(pFactory),
 	}
 }
 func (ts *TaskExecutionService) Poll(taskName string) (*api.Task, error) {
@@ -29,7 +29,7 @@ func (ts *TaskExecutionService) Poll(taskName string) (*api.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	var task *api.Task
+	task := &api.Task{}
 	err = proto.Unmarshal(data, task)
 	if err != nil {
 		return nil, err

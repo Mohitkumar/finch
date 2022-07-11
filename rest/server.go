@@ -8,21 +8,24 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/persistence/factory"
+	"github.com/mohitkumar/finch/service"
 	"go.uber.org/zap"
 )
 
 type Server struct {
-	HttpPort int
-	router   *mux.Router
-	pFactory *factory.PersistenceFactory
+	HttpPort        int
+	router          *mux.Router
+	pFactory        *factory.PersistenceFactory
+	executorService *service.WorkflowExecutionService
 }
 
 func NewServer(httpPort int, pFactory *factory.PersistenceFactory) (*Server, error) {
 
 	s := &Server{
-		HttpPort: httpPort,
-		router:   mux.NewRouter(),
-		pFactory: pFactory,
+		HttpPort:        httpPort,
+		router:          mux.NewRouter(),
+		pFactory:        pFactory,
+		executorService: service.NewWorkflowExecutionService(pFactory),
 	}
 
 	return s, nil
@@ -32,7 +35,7 @@ func (s *Server) Start() error {
 	logger.Info("startting http server on", zap.Int("port", s.HttpPort))
 	s.router.HandleFunc("/workflow", s.HandleCreateFlow).Methods(http.MethodPost)
 	s.router.HandleFunc("/workflow/{name}", s.HandleGetFlow).Methods(http.MethodGet)
-
+	s.router.HandleFunc("/flow/execute", s.HandleRunFlow).Methods(http.MethodPost)
 	s.router.Use(loggingMiddleware)
 	http.Handle("/", s.router)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.HttpPort), s.router); err != nil {

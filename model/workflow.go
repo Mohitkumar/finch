@@ -18,3 +18,8 @@ type ActionDef struct {
 	Forks       []int          `json:"forks"`
 	Join        int            `json:"join"`
 }
+
+type WorkflowRunRequest struct {
+	Name string         `json:"name"`
+	Data map[string]any `json:"data"`
+}

@@ -75,7 +75,7 @@ func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*api.FlowC
 		logger.Error("error in getting flow context", zap.String("flowName", wfName), zap.String("flowId", flowId), zap.Error(err))
 		return nil, api.StorageLayerError{}
 	}
-	var flowCtx *api.FlowContext
+	flowCtx := &api.FlowContext{}
 	if err := proto.Unmarshal([]byte(flowCtxStr), flowCtx); err != nil {
 		return nil, err
 	}

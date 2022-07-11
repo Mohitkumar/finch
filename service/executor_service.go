@@ -16,6 +16,12 @@ type WorkflowExecutionService struct {
 	taskExecutor *executor.TaskExecutor
 }
 
+func NewWorkflowExecutionService(pFactory *factory.PersistenceFactory) *WorkflowExecutionService {
+	return &WorkflowExecutionService{
+		pFactory:     pFactory,
+		taskExecutor: executor.NewTaskExecutor(pFactory),
+	}
+}
 func (s *WorkflowExecutionService) StartFlow(name string, data map[string]any) error {
 	wf, err := s.pFactory.GetWorkflowDao().Get(name)
 	if err != nil {

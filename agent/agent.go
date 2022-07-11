@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/mohitkumar/finch/config"
-	"github.com/mohitkumar/finch/executor"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/rest"
@@ -77,8 +76,7 @@ func (a *Agent) setupHttpServer() error {
 
 func (a *Agent) setupGrpcServer() error {
 	var err error
-	taskExecutor := &executor.TaskExecutor{}
-	taskService := service.NewTaskExecutionService(a.pFactory, taskExecutor)
+	taskService := service.NewTaskExecutionService(a.pFactory)
 	conf := &rpc.GrpcConfig{
 		TaskService: taskService,
 	}

@@ -10,6 +10,8 @@ import (
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type pollerWorker struct {
@@ -28,6 +30,12 @@ func (pw *pollerWorker) PollAndExecute() error {
 	}
 	task, err := pw.client.GetApiClient().Poll(ctx, req)
 	if err != nil {
+		if e, ok := status.FromError(err); ok {
+			switch e.Code() {
+			case codes.NotFound:
+				return nil
+			}
+		}
 		return err
 	}
 	result, err := pw.worker.Execute(util.ConvertFromProto(task.Data))
