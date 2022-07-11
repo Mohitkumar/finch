@@ -10,7 +10,7 @@ type client struct {
 	conn *grpc.ClientConn
 }
 
-func NewClient(serverAddress string) (*client, error) {
+func newClient(serverAddress string) (*client, error) {
 	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, err

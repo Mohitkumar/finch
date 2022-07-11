@@ -26,7 +26,7 @@ func (tp *TaskPoller) RegisterWorker(worker Worker) {
 
 func (tp *TaskPoller) Start() {
 	for _, w := range tp.workers {
-		client, err := NewClient(tp.Config.ServerUrl)
+		client, err := newClient(tp.Config.ServerUrl)
 		if err != nil {
 			panic(err)
 		}
