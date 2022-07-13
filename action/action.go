@@ -7,7 +7,7 @@ import (
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/util"
-	"github.com/yalp/jsonpath"
+	"github.com/oliveagle/jsonpath"
 )
 
 type ActionType string
@@ -83,7 +83,7 @@ func (ba *baseAction) resolveParams(flowData map[string]any, params map[string]a
 			ba.resolveParams(flowData, v.(map[string]any), out)
 		case string:
 			if strings.HasPrefix(v.(string), "$") {
-				value, _ := jsonpath.Read(flowData, v.(string))
+				value, _ := jsonpath.JsonPathLookup(flowData, v.(string))
 				output[k] = value
 			} else {
 				output[k] = v

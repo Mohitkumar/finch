@@ -7,9 +7,9 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
+	github.com/oliveagle/jsonpath v0.0.0-20180606110733-2e52cf6e6852
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
-	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0
 	go.opencensus.io v0.23.0
 	go.uber.org/zap v1.21.0
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd

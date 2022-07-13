@@ -6,7 +6,7 @@ import (
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/util"
-	"github.com/yalp/jsonpath"
+	"github.com/oliveagle/jsonpath"
 )
 
 var _ Action = new(decisionAction)
@@ -26,7 +26,7 @@ func NewDecisionAction(id int, Type ActionType, name string, inputParams map[str
 
 func (d *decisionAction) Execute(wfName string, flowContext *api.FlowContext) error {
 	dataMap := util.ConvertFromProto(flowContext.Data)
-	expressionValue, err := jsonpath.Read(dataMap, d.expression)
+	expressionValue, err := jsonpath.JsonPathLookup(dataMap, d.expression)
 	if err != nil {
 		return err
 	}
