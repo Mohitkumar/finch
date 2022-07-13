@@ -3,6 +3,7 @@ package action
 import (
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/persistence/factory"
+	"github.com/mohitkumar/finch/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -24,7 +25,7 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error
 	task := &api.Task{
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
-		Data:         flowContext.Data,
+		Data:         util.ConvertToProto(ua.ResolveInputParams(flowContext)),
 		ActionId:     flowContext.CurrentAction,
 	}
 	d, err := proto.Marshal(task)

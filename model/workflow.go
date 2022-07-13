@@ -1,17 +1,16 @@
 package model
 
 type Workflow struct {
-	Name       string         `json:"name"`
-	Data       map[string]any `json:"data"`
-	RootAction int            `json:"rootAction"`
-	Actions    []ActionDef    `json:"actions"`
+	Name       string      `json:"name"`
+	RootAction int         `json:"rootAction"`
+	Actions    []ActionDef `json:"actions"`
 }
 
 type ActionDef struct {
 	Id          int            `json:"id"`
 	Type        string         `json:"type"`
 	Name        string         `json:"name"`
-	InputParams map[string]any `json:"inputParams"`
+	InputParams map[string]any `json:"parameters"`
 	Next        int            `json:"next"`
 	Expression  string         `json:"expression"`
 	Cases       map[string]int `json:"cases"`
@@ -20,6 +19,6 @@ type ActionDef struct {
 }
 
 type WorkflowRunRequest struct {
-	Name string         `json:"name"`
-	Data map[string]any `json:"data"`
+	Name  string         `json:"name"`
+	Input map[string]any `json:"input"`
 }

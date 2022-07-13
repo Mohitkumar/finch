@@ -1,13 +1,16 @@
 package worker
 
 import (
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	api "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/logger"
 )
 
 type client struct {
-	conn *grpc.ClientConn
+	serverUrl string
+	conn      *grpc.ClientConn
 }
 
 func newClient(serverAddress string) (*client, error) {
@@ -16,12 +19,21 @@ func newClient(serverAddress string) (*client, error) {
 		return nil, err
 	}
 	return &client{
-		conn: conn,
+		serverUrl: serverAddress,
+		conn:      conn,
 	}, nil
 }
 
 func (c *client) Close() error {
 	return c.conn.Close()
+}
+
+func (c *client) Refresh() {
+	conn, err := grpc.Dial(c.serverUrl, grpc.WithInsecure())
+	if err != nil {
+		logger.Error("grpc server unavailable", zap.String("server", c.serverUrl))
+	}
+	c.conn = conn
 }
 
 func (c *client) GetApiClient() api.TaskServiceClient {

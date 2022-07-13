@@ -53,7 +53,7 @@ func (s *TaskExecutionService) HandleTaskResult(taskResult *api.TaskResult) erro
 			return fmt.Errorf("workflow = %s not found", wfName)
 		}
 		flow := flow.Convert(wf, wfId, s.pFactory)
-		flowCtx, err := s.pFactory.GetFlowDao().UpdateFlowContextData(wfName, wfId, int(taskResult.ActionId), data)
+		flowCtx, err := s.pFactory.GetFlowDao().AddActionOutputToFlowContext(wfName, wfId, int(taskResult.ActionId), data)
 		if err != nil {
 			return err
 		}

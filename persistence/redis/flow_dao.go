@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
@@ -25,13 +25,14 @@ func NewRedisFlowDao(conf Config) *redisFlowDao {
 		baseDao: *newBaseDao(conf),
 	}
 }
-func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
+func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, input map[string]any) (*api.FlowContext, error) {
+	dataMap := make(map[string]any)
+	dataMap["input"] = input
 	flowCtx := &api.FlowContext{
-		Id:                 flowId,
-		WorkflowState:      api.FlowContext_RUNNING,
-		CurrentActionState: api.FlowContext_A_RUNNING,
-		CurrentAction:      int32(action),
-		Data:               util.ConvertToProto(dataMap),
+		Id:            flowId,
+		WorkflowState: api.FlowContext_RUNNING,
+		CurrentAction: int32(action),
+		Data:          util.ConvertToProto(dataMap),
 	}
 	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
@@ -40,13 +41,15 @@ func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, a
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) UpdateFlowContextData(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
+func (rf *redisFlowDao) AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
 	flowCtx, err := rf.GetFlowContext(wFname, flowId)
 	if err != nil {
 		return nil, err
 	}
 	data := flowCtx.GetData()
-	data[strconv.Itoa(action)] = util.ConvertMapToStructPb(dataMap)
+	output := make(map[string]any)
+	output["output"] = dataMap
+	data[fmt.Sprintf("%d", action)] = util.ConvertMapToStructPb(output)
 	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}

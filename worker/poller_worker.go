@@ -34,6 +34,8 @@ func (pw *pollerWorker) PollAndExecute() error {
 			switch e.Code() {
 			case codes.NotFound:
 				return nil
+			case codes.Unavailable:
+				pw.client.Refresh()
 			}
 		}
 		return err
@@ -59,6 +61,12 @@ func (pw *pollerWorker) PollAndExecute() error {
 	b := backoff.WithMaxRetries(backoff.NewConstantBackOff(time.Duration(pw.retryIntervalSecond)*time.Second), uint64(pw.maxRetryBeforeResultPush))
 	err = backoff.Retry(func() error {
 		_, err := pw.client.GetApiClient().Push(ctx, taskResult)
+		if e, ok := status.FromError(err); ok {
+			switch e.Code() {
+			case codes.Unavailable:
+				pw.client.Refresh()
+			}
+		}
 		if err != nil {
 			return err
 		}

@@ -13,14 +13,8 @@ message FlowContext{
         COMPLETED = 2;
     }
     WorkflowState workflowState= 4;
-    enum ActionState{
-        A_RUNNING = 0;
-        A_FAILED = 1;
-        A_COMPLETED = 2;
-    }
-    ActionState currentActionState = 5;
-    map<string,google.protobuf.Value> data = 6;
-    uint64 ttl = 7;
+    map<string,google.protobuf.Value> data = 5;
+    uint64 ttl = 6;
 }
 
 message Task{

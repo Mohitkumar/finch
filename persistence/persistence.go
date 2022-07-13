@@ -20,7 +20,7 @@ type WorkflowDao interface {
 
 type FlowDao interface {
 	CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
-	UpdateFlowContextData(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
+	AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
 	GetFlowContext(wfName string, flowId string) (*api.FlowContext, error)
 	SaveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error
 }

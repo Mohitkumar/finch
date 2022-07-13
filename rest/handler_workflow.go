@@ -15,7 +15,7 @@ func (s *Server) HandleRunFlow(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	defer r.Body.Close()
-	err := s.executorService.StartFlow(runReq.Name, runReq.Data)
+	err := s.executorService.StartFlow(runReq.Name, runReq.Input)
 	if err != nil {
 		logger.Error("error running workflow", zap.String("name", runReq.Name), zap.Error(err))
 		respondWithError(w, http.StatusBadRequest, "error running workflow")
