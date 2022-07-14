@@ -23,7 +23,7 @@ func Convert(wf *model.Workflow, id string, pFactory *factory.PersistenceFactory
 		if actionType == action.ACTION_TYPE_SYSTEM {
 			if strings.EqualFold(actionDef.Name, "switch") {
 				flAct = action.NewSwitchAction(actionDef.Id, actionType,
-					actionDef.Name, actionDef.InputParams, actionDef.Expression, pFactory)
+					actionDef.Name, actionDef.InputParams, actionDef.Expression, actionDef.Cases, pFactory)
 			}
 		} else {
 			flAct = action.NewUserAction(actionDef.Id, actionType,

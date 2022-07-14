@@ -16,7 +16,7 @@ const ACTION_TYPE_SYSTEM ActionType = "SYSTEM"
 const ACTION_TYPE_USER ActionType = "USER"
 
 func ToActionType(at string) ActionType {
-	if at == "SYSTEM" {
+	if strings.EqualFold(at, "system") {
 		return ACTION_TYPE_SYSTEM
 	}
 	return ACTION_TYPE_USER

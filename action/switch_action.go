@@ -17,10 +17,11 @@ type switchAction struct {
 	cases      map[string]int
 }
 
-func NewSwitchAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, pFactory *factory.PersistenceFactory) *decisionAction {
+func NewSwitchAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, cases map[string]int, pFactory *factory.PersistenceFactory) *switchAction {
 	return &switchAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		expression: expression,
+		cases:      cases,
 	}
 }
 
@@ -32,8 +33,12 @@ func (d *switchAction) Execute(wfName string, flowContext *api.FlowContext) erro
 	}
 	var nextAction int
 	switch expValue := expressionValue.(type) {
-	case int:
-		nextAction = d.cases[strconv.Itoa(nextAction)]
+	case int, int16, int32, int64:
+		nextAction = d.cases[strconv.Itoa(expressionValue.(int))]
+	case float32, float64:
+		nextAction = d.cases[strconv.Itoa(int(expressionValue.(float64)))]
+	case bool:
+		nextAction = d.cases[strconv.FormatBool(expressionValue.(bool))]
 	case string:
 		nextAction = d.cases[expValue]
 	}
