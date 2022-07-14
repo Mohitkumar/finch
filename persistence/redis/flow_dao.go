@@ -34,7 +34,7 @@ func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, a
 		CurrentAction: int32(action),
 		Data:          util.ConvertToProto(dataMap),
 	}
-	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
+	if err := rf.saveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 
@@ -50,13 +50,13 @@ func (rf *redisFlowDao) AddActionOutputToFlowContext(wFname string, flowId strin
 	output := make(map[string]any)
 	output["output"] = dataMap
 	data[fmt.Sprintf("%d", action)] = util.ConvertMapToStructPb(output)
-	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
+	if err := rf.saveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error {
+func (rf *redisFlowDao) saveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error {
 	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wfName)
 	ctx := context.Background()
 	data, err := proto.Marshal(flowCtx)
@@ -70,6 +70,15 @@ func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *a
 	return nil
 }
 
+func (rf *redisFlowDao) UpdateFlowContextNextAction(wfName string, flowId string, flowCtx *api.FlowContext, nextAction int) error {
+	flowCtx.NextAction = int32(nextAction)
+	return rf.saveFlowContext(wfName, flowId, flowCtx)
+}
+
+func (rf *redisFlowDao) UpdateFlowStatus(wfName string, flowId string, flowCtx *api.FlowContext, flowState api.FlowContext_WorkflowState) error {
+	flowCtx.WorkflowState = flowState
+	return rf.saveFlowContext(wfName, flowId, flowCtx)
+}
 func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*api.FlowContext, error) {
 	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wfName)
 	ctx := context.Background()

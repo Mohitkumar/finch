@@ -32,8 +32,13 @@ func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error
 	if err != nil {
 		return err
 	}
-	flowContext.NextAction = int32(ua.nextAction)
-	ua.pFactory.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
-	ua.pFactory.GetQueue().Push(ua.GetName(), d)
+	err = ua.pFactory.GetFlowDao().UpdateFlowContextNextAction(wfName, flowContext.Id, flowContext, ua.nextAction)
+	if err != nil {
+		return err
+	}
+	err = ua.pFactory.GetQueue().Push(ua.GetName(), d)
+	if err != nil {
+		return err
+	}
 	return nil
 }

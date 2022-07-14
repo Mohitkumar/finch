@@ -19,8 +19,7 @@ func NewTaskExecutor(pFactory *factory.PersistenceFactory) *TaskExecutor {
 
 func (ex *TaskExecutor) ExecuteAction(wfName string, actionId int, flow flow.Flow, flowContext *api.FlowContext) error {
 	if _, ok := flow.Actions[int(actionId)]; !ok {
-		flowContext.WorkflowState = api.FlowContext_COMPLETED
-		return ex.pFactory.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
+		return ex.pFactory.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_COMPLETED)
 	}
 	currentAction := flow.Actions[actionId]
 	err := currentAction.Execute(wfName, flowContext)
