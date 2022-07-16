@@ -37,6 +37,7 @@ type PriorityQueue interface {
 }
 
 type DelayQueue interface {
-	Queue
+	Push(queueName string, mesage []byte) error
+	Pop(queueName string) ([]string, error)
 	PushWithDelay(queueName string, delay time.Duration, message []byte) error
 }

@@ -8,14 +8,13 @@ import (
 )
 
 type baseDao struct {
-	redisClient *rd.Client
+	redisClient rd.UniversalClient
 	namespace   string
 }
 
 func newBaseDao(conf Config) *baseDao {
-	redisClient := rd.NewClient(&rd.Options{
-		Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port),
-		DB:   0,
+	redisClient := rd.NewUniversalClient(&rd.UniversalOptions{
+		Addrs: []string{fmt.Sprintf("%s:%d", conf.Host, conf.Port)},
 	})
 	return &baseDao{
 		redisClient: redisClient,

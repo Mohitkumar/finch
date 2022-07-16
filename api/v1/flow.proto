@@ -11,6 +11,8 @@ message FlowContext{
         RUNNING = 0;
         FAILED = 1;
         COMPLETED = 2;
+        DELAY_WATING = 3;
+        EVENT_WAITING = 4;
     }
     WorkflowState workflowState= 4;
     map<string,google.protobuf.Value> data = 5;

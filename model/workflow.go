@@ -7,15 +7,16 @@ type Workflow struct {
 }
 
 type ActionDef struct {
-	Id          int            `json:"id"`
-	Type        string         `json:"type"`
-	Name        string         `json:"name"`
-	InputParams map[string]any `json:"parameters"`
-	Next        int            `json:"next"`
-	Expression  string         `json:"expression"`
-	Cases       map[string]int `json:"cases"`
-	Forks       []int          `json:"forks"`
-	Join        int            `json:"join"`
+	Id           int            `json:"id"`
+	Type         string         `json:"type"`
+	Name         string         `json:"name"`
+	InputParams  map[string]any `json:"parameters"`
+	Next         int            `json:"next"`
+	Expression   string         `json:"expression"`
+	Cases        map[string]int `json:"cases"`
+	Forks        []int          `json:"forks"`
+	Join         int            `json:"join"`
+	DelaySeconds int            `json:"delaySeconds"`
 }
 
 type WorkflowRunRequest struct {

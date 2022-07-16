@@ -27,6 +27,7 @@ type PersistenceFactory struct {
 	wfDao       persistence.WorkflowDao
 	flowDao     persistence.FlowDao
 	queue       persistence.Queue
+	delayQueue  persistence.DelayQueue
 }
 
 func (p *PersistenceFactory) setInitialized() {
@@ -44,6 +45,7 @@ func (p *PersistenceFactory) Init(config Config, pImpl PersistenceImplementation
 		p.wfDao = rd.NewRedisWorkflowDao(*rdConf)
 		p.flowDao = rd.NewRedisFlowDao(*rdConf)
 		p.queue = rd.NewRedisQueue(*rdConf)
+		p.delayQueue = rd.NewRedisDelayQueue(*rdConf)
 	case INMEMORY_PERSISTENCE_IMPL:
 
 	}
@@ -68,4 +70,11 @@ func (p *PersistenceFactory) GetQueue() persistence.Queue {
 		panic("ersistence not initalized")
 	}
 	return p.queue
+}
+
+func (p *PersistenceFactory) GetDelayQueue() persistence.DelayQueue {
+	if !p.initialized {
+		panic("ersistence not initalized")
+	}
+	return p.delayQueue
 }

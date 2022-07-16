@@ -30,7 +30,12 @@ func (ex *TaskExecutor) ExecuteAction(wfName string, actionId int, flow flow.Flo
 
 	switch currentAction.GetType() {
 	case action.ACTION_TYPE_SYSTEM:
-		return ex.ExecuteAction(wfName, int(nextActionId), flow, flowContext)
+		switch currentAction.GetName() {
+		case "switch":
+			return ex.ExecuteAction(wfName, int(nextActionId), flow, flowContext)
+		case "delay":
+
+		}
 	case action.ACTION_TYPE_USER:
 
 	}

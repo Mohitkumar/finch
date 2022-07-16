@@ -23,7 +23,10 @@ func Convert(wf *model.Workflow, id string, pFactory *factory.PersistenceFactory
 		if actionType == action.ACTION_TYPE_SYSTEM {
 			if strings.EqualFold(actionDef.Name, "switch") {
 				flAct = action.NewSwitchAction(actionDef.Id, actionType,
-					actionDef.Name, actionDef.InputParams, actionDef.Expression, actionDef.Cases, pFactory)
+					actionDef.Name, actionDef.Expression, actionDef.Cases, pFactory)
+			} else if strings.EqualFold(actionDef.Name, "delay") {
+				flAct = action.NewDelayAction(actionDef.Id, actionType,
+					actionDef.Name, actionDef.DelaySeconds, actionDef.Next, pFactory)
 			}
 		} else {
 			flAct = action.NewUserAction(actionDef.Id, actionType,

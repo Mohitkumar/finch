@@ -17,7 +17,8 @@ type switchAction struct {
 	cases      map[string]int
 }
 
-func NewSwitchAction(id int, Type ActionType, name string, inputParams map[string]any, expression string, cases map[string]int, pFactory *factory.PersistenceFactory) *switchAction {
+func NewSwitchAction(id int, Type ActionType, name string, expression string, cases map[string]int, pFactory *factory.PersistenceFactory) *switchAction {
+	inputParams := map[string]any{}
 	return &switchAction{
 		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
 		expression: expression,
