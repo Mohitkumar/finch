@@ -6,6 +6,7 @@ import (
 
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
+	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/persistence"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
@@ -18,6 +19,7 @@ var _ persistence.FlowDao = new(redisFlowDao)
 
 type redisFlowDao struct {
 	baseDao
+	encoderDecoder util.EncoderDecoder[model.FlowContext]
 }
 
 func NewRedisFlowDao(conf Config) *redisFlowDao {
@@ -56,10 +58,10 @@ func (rf *redisFlowDao) AddActionOutputToFlowContext(wFname string, flowId strin
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) saveFlowContext(wfName string, flowId string, flowCtx *api.FlowContext) error {
+func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *model.FlowContext) error {
 	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wfName)
 	ctx := context.Background()
-	data, err := proto.Marshal(flowCtx)
+	data, err := rf.encoderDecoder.Encode(*flowCtx)
 	if err != nil {
 		return err
 	}

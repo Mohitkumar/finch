@@ -1,43 +1,38 @@
 package executor
 
 import (
-	"github.com/mohitkumar/finch/action"
-	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/container"
-	"github.com/mohitkumar/finch/flow"
+	"github.com/mohitkumar/finch/logger"
+	"go.uber.org/zap"
 )
 
-type TaskExecutor struct {
-	container *container.DIContiner
+type Executor interface {
+	Start() error
+	Stop() error
+	Name() string
 }
 
-func NewTaskExecutor(container *container.DIContiner) *TaskExecutor {
-	return &TaskExecutor{
-		container: container,
-	}
+type Executors struct {
+	exArray []Executor
 }
 
-func (ex *TaskExecutor) ExecuteAction(wfName string, actionId int, flow flow.Flow, flowContext *api.FlowContext) error {
-	if _, ok := flow.Actions[int(actionId)]; !ok {
-		return ex.container.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_COMPLETED)
-	}
-	currentAction := flow.Actions[actionId]
-	err := currentAction.Execute(wfName, flowContext)
-	if err != nil {
-		return err
-	}
-	nextActionId := flowContext.NextAction
+func (e *Executors) Register(ex Executor) {
+	e.exArray = append(e.exArray, ex)
+}
 
-	switch currentAction.GetType() {
-	case action.ACTION_TYPE_SYSTEM:
-		switch currentAction.GetName() {
-		case "switch":
-			return ex.ExecuteAction(wfName, int(nextActionId), flow, flowContext)
-		case "delay":
-
+func (e *Executors) Start() {
+	for _, ex := range e.exArray {
+		err := ex.Start()
+		if err != nil {
+			logger.Error("error starting executor", zap.String("name", ex.Name()), zap.Error(err))
 		}
-	case action.ACTION_TYPE_USER:
-
 	}
-	return nil
+}
+
+func (e *Executors) Stop() {
+	for _, ex := range e.exArray {
+		err := ex.Stop()
+		if err != nil {
+			logger.Error("error stoping executor", zap.String("name", ex.Name()), zap.Error(err))
+		}
+	}
 }

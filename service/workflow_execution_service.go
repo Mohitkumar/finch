@@ -8,6 +8,7 @@ import (
 	"github.com/mohitkumar/finch/executor"
 	"github.com/mohitkumar/finch/flow"
 	"github.com/mohitkumar/finch/logger"
+	"github.com/mohitkumar/finch/model"
 	"go.uber.org/zap"
 )
 
@@ -29,7 +30,15 @@ func (s *WorkflowExecutionService) StartFlow(name string, input map[string]any) 
 		return fmt.Errorf("workflow = %s not found", name)
 	}
 	flow := flow.Convert(wf, uuid.New().String(), s.container)
-	flowCtx, err := s.container.GetFlowDao().CreateAndSaveFlowContext(name, flow.Id, flow.RootAction, input)
+	dataMap := make(map[string]any)
+	dataMap["input"] = input
+	flowCtx := &model.FlowContext{
+		Id:            flow.Id,
+		State:         model.RUNNING,
+		CurrentAction: wf.RootAction,
+		Data:          dataMap,
+	}
+	err = s.container.GetFlowDao().SaveFlowContext(name, flow.Id, flowCtx)
 	if err != nil {
 		return err
 	}

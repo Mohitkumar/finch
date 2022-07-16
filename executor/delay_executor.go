@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var _ Executor = new(DelayExecutor)
+
 type DelayExecutor struct {
 	container *container.DIContiner
 	sync.WaitGroup
@@ -28,7 +30,11 @@ func NewDelayExecutor(container *container.DIContiner) *DelayExecutor {
 	}
 }
 
-func (ex *DelayExecutor) Start() {
+func (ex *DelayExecutor) Name() string {
+	return "delay-executor"
+}
+
+func (ex *DelayExecutor) Start() error {
 	fn := func() {
 		res, err := ex.container.GetDelayQueue().Pop("delay_action")
 		if err != nil {
@@ -61,8 +67,10 @@ func (ex *DelayExecutor) Start() {
 	}
 	tw := util.NewTickWorker(1, ex.stop, fn, &ex.WaitGroup)
 	tw.Start()
+	return nil
 }
 
-func (ex *DelayExecutor) Stop() {
+func (ex *DelayExecutor) Stop() error {
 	ex.stop <- struct{}{}
+	return nil
 }
