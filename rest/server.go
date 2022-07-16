@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/logger"
-	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/service"
 	"go.uber.org/zap"
 )
@@ -15,17 +15,17 @@ import (
 type Server struct {
 	HttpPort        int
 	router          *mux.Router
-	pFactory        *factory.PersistenceFactory
+	container       *container.DIContiner
 	executorService *service.WorkflowExecutionService
 }
 
-func NewServer(httpPort int, pFactory *factory.PersistenceFactory) (*Server, error) {
+func NewServer(httpPort int, container *container.DIContiner) (*Server, error) {
 
 	s := &Server{
 		HttpPort:        httpPort,
 		router:          mux.NewRouter(),
-		pFactory:        pFactory,
-		executorService: service.NewWorkflowExecutionService(pFactory),
+		container:       container,
+		executorService: service.NewWorkflowExecutionService(container),
 	}
 
 	return s, nil

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	api "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/model"
-	"github.com/mohitkumar/finch/persistence/factory"
 )
 
 var _ Action = new(delayAction)
@@ -17,10 +17,10 @@ type delayAction struct {
 	nextAction int
 }
 
-func NewDelayAction(id int, Type ActionType, name string, delaySeconds int, nextAction int, pFactory *factory.PersistenceFactory) *delayAction {
+func NewDelayAction(id int, Type ActionType, name string, delaySeconds int, nextAction int, container *container.DIContiner) *delayAction {
 	inputParams := map[string]any{}
 	return &delayAction{
-		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
+		baseAction: *NewBaseAction(id, Type, name, inputParams, container),
 		delay:      time.Duration(delaySeconds) * time.Second,
 		nextAction: nextAction,
 	}
@@ -32,9 +32,9 @@ func (d *delayAction) Execute(wfName string, flowContext *api.FlowContext) error
 		ActionId:     d.nextAction,
 	}
 	data, _ := json.Marshal(msg)
-	err := d.pFactory.GetDelayQueue().PushWithDelay("delay_action", d.delay, data)
+	err := d.container.GetDelayQueue().PushWithDelay("delay_action", d.delay, data)
 	if err != nil {
 		return err
 	}
-	return d.pFactory.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_DELAY_WATING)
+	return d.container.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_DELAY_WATING)
 }

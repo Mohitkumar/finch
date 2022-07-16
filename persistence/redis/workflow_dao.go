@@ -5,6 +5,7 @@ import (
 
 	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/persistence"
+	"github.com/mohitkumar/finch/util"
 )
 
 var _ persistence.WorkflowDao = new(redisWorkflowDao)
@@ -13,13 +14,13 @@ const WORKFLOW_DEF string = "WF_DEF"
 
 type redisWorkflowDao struct {
 	baseDao
-	encoderDecoder persistence.EncoderDecoder[model.Workflow]
+	encoderDecoder util.EncoderDecoder[model.Workflow]
 }
 
 func NewRedisWorkflowDao(conf Config) *redisWorkflowDao {
 	return &redisWorkflowDao{
 		baseDao:        *newBaseDao(conf),
-		encoderDecoder: persistence.NewJsonEncoderDecoder[model.Workflow](),
+		encoderDecoder: util.NewJsonEncoderDecoder[model.Workflow](),
 	}
 }
 

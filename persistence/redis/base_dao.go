@@ -14,7 +14,7 @@ type baseDao struct {
 
 func newBaseDao(conf Config) *baseDao {
 	redisClient := rd.NewUniversalClient(&rd.UniversalOptions{
-		Addrs: []string{fmt.Sprintf("%s:%d", conf.Host, conf.Port)},
+		Addrs: conf.Addrs,
 	})
 	return &baseDao{
 		redisClient: redisClient,

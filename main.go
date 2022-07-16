@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/mohitkumar/finch/agent"
@@ -21,12 +22,13 @@ type cli struct {
 
 func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("config-file", "", "Path to config file.")
-	cmd.Flags().String("redis-host", "localhost", "redis host name")
-	cmd.Flags().Int("redis-port", 6379, "redis port")
+	cmd.Flags().String("redis-addr", "localhost:6379", "comma separated list of redis host:port")
 	cmd.Flags().String("namespace", "finch", "namespace used in storage")
 	cmd.Flags().Int("http-port", 8080, "htt port for rest endpoints")
 	cmd.Flags().Int("grpc-port", 8099, "grpc port for worker connection")
 	cmd.Flags().String("storage-impl", "redis", "implementation of underline storage")
+	cmd.Flags().String("queue-impl", "redis", "implementation of underline queue ")
+	cmd.Flags().String("encoder-decoder", "JSON", "encoder decoder used to serialzie data")
 	return viper.BindPFlags(cmd.Flags())
 }
 
@@ -46,12 +48,13 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	c.cfg.RedisConfig.Host = viper.GetString("redis-host")
-	c.cfg.RedisConfig.Port = viper.GetInt("redis-port")
+	c.cfg.RedisConfig.Addrs = strings.Split(viper.GetString("redis-addr"), ",")
 	c.cfg.RedisConfig.Namespace = viper.GetString("namespace")
 	c.cfg.HttpPort = viper.GetInt("http-port")
 	c.cfg.GrpcPort = viper.GetInt("grpc-port")
-	c.cfg.StorageImpl = config.StorageImplementation(viper.GetString("storage-impl"))
+	c.cfg.StorageType = config.StorageType(viper.GetString("storage-impl"))
+	c.cfg.QueueType = config.QueueType(viper.GetString("queue-impl"))
+	c.cfg.EncoderDecoderType = config.EncoderDecoderType(viper.GetString("encoder-decoder"))
 	return nil
 }
 

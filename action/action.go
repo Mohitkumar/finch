@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/persistence/factory"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/util"
 	"github.com/oliveagle/jsonpath"
 )
@@ -37,16 +37,16 @@ type baseAction struct {
 	actType     ActionType
 	name        string
 	inputParams map[string]any
-	pFactory    *factory.PersistenceFactory
+	container   *container.DIContiner
 }
 
-func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, pFactory *factory.PersistenceFactory) *baseAction {
+func NewBaseAction(id int, Type ActionType, name string, inputParams map[string]any, container *container.DIContiner) *baseAction {
 	return &baseAction{
 		id:          id,
 		name:        name,
 		inputParams: inputParams,
 		actType:     Type,
-		pFactory:    pFactory,
+		container:   container,
 	}
 
 }

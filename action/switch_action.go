@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	api "github.com/mohitkumar/finch/api/v1"
-	"github.com/mohitkumar/finch/persistence/factory"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/util"
 	"github.com/oliveagle/jsonpath"
 )
@@ -17,10 +17,10 @@ type switchAction struct {
 	cases      map[string]int
 }
 
-func NewSwitchAction(id int, Type ActionType, name string, expression string, cases map[string]int, pFactory *factory.PersistenceFactory) *switchAction {
+func NewSwitchAction(id int, Type ActionType, name string, expression string, cases map[string]int, container *container.DIContiner) *switchAction {
 	inputParams := map[string]any{}
 	return &switchAction{
-		baseAction: *NewBaseAction(id, Type, name, inputParams, pFactory),
+		baseAction: *NewBaseAction(id, Type, name, inputParams, container),
 		expression: expression,
 		cases:      cases,
 	}
@@ -43,7 +43,7 @@ func (d *switchAction) Execute(wfName string, flowContext *api.FlowContext) erro
 	case string:
 		nextAction = d.cases[expValue]
 	}
-	err = d.pFactory.GetFlowDao().UpdateFlowContextNextAction(wfName, flowContext.Id, flowContext, nextAction)
+	err = d.container.GetFlowDao().UpdateFlowContextNextAction(wfName, flowContext.Id, flowContext, nextAction)
 	if err != nil {
 		return err
 	}

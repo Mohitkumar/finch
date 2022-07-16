@@ -5,32 +5,32 @@ import (
 	"sync"
 
 	api_v1 "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/flow"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/model"
-	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
 )
 
 type DelayExecutor struct {
-	pFactory *factory.PersistenceFactory
+	container *container.DIContiner
 	sync.WaitGroup
 	stop         chan struct{}
 	taskExecutor *TaskExecutor
 }
 
-func NewDelayExecutor(pFactory *factory.PersistenceFactory) *DelayExecutor {
+func NewDelayExecutor(container *container.DIContiner) *DelayExecutor {
 	return &DelayExecutor{
-		pFactory:     pFactory,
-		taskExecutor: NewTaskExecutor(pFactory),
+		container:    container,
+		taskExecutor: NewTaskExecutor(container),
 		stop:         make(chan struct{}),
 	}
 }
 
 func (ex *DelayExecutor) Start() {
 	fn := func() {
-		res, err := ex.pFactory.GetDelayQueue().Pop("delay_action")
+		res, err := ex.container.GetDelayQueue().Pop("delay_action")
 		if err != nil {
 			_, ok := err.(api_v1.PollError)
 			if !ok {
@@ -41,13 +41,13 @@ func (ex *DelayExecutor) Start() {
 		for _, r := range res {
 			var msg *model.FlowContextMessage
 			json.Unmarshal([]byte(r), &msg)
-			wf, err := ex.pFactory.GetWorkflowDao().Get(msg.WorkflowName)
+			wf, err := ex.container.GetWorkflowDao().Get(msg.WorkflowName)
 			if err != nil {
 				logger.Error("workflow not found", zap.String("name", msg.WorkflowName))
 				continue
 			}
-			flow := flow.Convert(wf, msg.FlowId, ex.pFactory)
-			flowCtx, err := ex.pFactory.GetFlowDao().GetFlowContext(wf.Name, flow.Id)
+			flow := flow.Convert(wf, msg.FlowId, ex.container)
+			flowCtx, err := ex.container.GetFlowDao().GetFlowContext(wf.Name, flow.Id)
 			if err != nil {
 				logger.Error("flow context not found", zap.String("name", msg.WorkflowName), zap.String("flowId", msg.FlowId))
 				continue

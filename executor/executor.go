@@ -3,23 +3,23 @@ package executor
 import (
 	"github.com/mohitkumar/finch/action"
 	api "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/flow"
-	"github.com/mohitkumar/finch/persistence/factory"
 )
 
 type TaskExecutor struct {
-	pFactory *factory.PersistenceFactory
+	container *container.DIContiner
 }
 
-func NewTaskExecutor(pFactory *factory.PersistenceFactory) *TaskExecutor {
+func NewTaskExecutor(container *container.DIContiner) *TaskExecutor {
 	return &TaskExecutor{
-		pFactory: pFactory,
+		container: container,
 	}
 }
 
 func (ex *TaskExecutor) ExecuteAction(wfName string, actionId int, flow flow.Flow, flowContext *api.FlowContext) error {
 	if _, ok := flow.Actions[int(actionId)]; !ok {
-		return ex.pFactory.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_COMPLETED)
+		return ex.container.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_COMPLETED)
 	}
 	currentAction := flow.Actions[actionId]
 	err := currentAction.Execute(wfName, flowContext)

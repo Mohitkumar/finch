@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/mohitkumar/finch/config"
+	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/logger"
-	"github.com/mohitkumar/finch/persistence/factory"
 	"github.com/mohitkumar/finch/rest"
 	"github.com/mohitkumar/finch/rpc"
 	"github.com/mohitkumar/finch/service"
@@ -16,9 +16,8 @@ import (
 )
 
 type Agent struct {
-	Config config.Config
-
-	pFactory     *factory.PersistenceFactory
+	Config       config.Config
+	diContainer  *container.DIContiner
 	httpServer   *rest.Server
 	grpcServer   *grpc.Server
 	shutdown     bool
@@ -33,7 +32,7 @@ func New(config config.Config) (*Agent, error) {
 		shutdowns: make(chan struct{}),
 	}
 	setup := []func() error{
-		a.setupPersistence,
+		a.setupDiContainer,
 		a.setupHttpServer,
 		a.setupGrpcServer,
 	}
@@ -45,29 +44,15 @@ func New(config config.Config) (*Agent, error) {
 	return a, nil
 }
 
-func (a *Agent) setupPersistence() error {
-	switch a.Config.StorageImpl {
-	case config.STORAGE_IMPL_REDIS:
-		redisConfig := factory.RedisConfig{
-			Host:      a.Config.RedisConfig.Host,
-			Port:      a.Config.RedisConfig.Port,
-			Namespace: a.Config.RedisConfig.Namespace,
-		}
-		cnf := factory.Config{
-			RedisConfig: redisConfig,
-		}
-		pFactory := new(factory.PersistenceFactory)
-		pFactory.Init(cnf, factory.REDIS_PERSISTENCE_IMPL)
-		a.pFactory = pFactory
-	case config.STORAGE_IMPL_INMEM:
-		panic(fmt.Errorf("not yet implemented"))
-	}
+func (a *Agent) setupDiContainer() error {
+	a.diContainer = container.NewDiContainer()
+	a.diContainer.Init(a.Config)
 	return nil
 }
 
 func (a *Agent) setupHttpServer() error {
 	var err error
-	a.httpServer, err = rest.NewServer(a.Config.HttpPort, a.pFactory)
+	a.httpServer, err = rest.NewServer(a.Config.HttpPort, a.diContainer)
 	if err != nil {
 		return err
 	}
@@ -76,7 +61,7 @@ func (a *Agent) setupHttpServer() error {
 
 func (a *Agent) setupGrpcServer() error {
 	var err error
-	taskService := service.NewTaskExecutionService(a.pFactory)
+	taskService := service.NewTaskExecutionService(a.diContainer)
 	conf := &rpc.GrpcConfig{
 		TaskService: taskService,
 	}

@@ -1,23 +1,44 @@
 package config
 
-type StorageImplementation string
+type StorageType string
 
-const STORAGE_IMPL_REDIS StorageImplementation = "redis"
-const STORAGE_IMPL_INMEM StorageImplementation = "memory"
+type QueueType string
+
+const STORAGE_TYPE_REDIS StorageType = "redis"
+const STORAGE_TYPE_INMEM StorageType = "memory"
+const STORAGE_TYPE_DYNAMO StorageType = "dynamo"
+
+const QUEUE_TYPE_REDIS QueueType = "redis"
+const QUEUE_TYPE_SQS QueueType = "sqs"
+
+type EncoderDecoderType string
+
+const JSON_ENCODER_DECODER EncoderDecoderType = "JSON"
+const PROTO_ENCODER_DECODER EncoderDecoderType = "PROTO"
 
 type Config struct {
-	RedisConfig    RedisStorageConfig
-	InMemoryConfig InmemoryStorageConfig
-	HttpPort       int
-	GrpcPort       int
-	StorageImpl    StorageImplementation
+	RedisConfig        RedisStorageConfig
+	InMemoryConfig     InmemStorageConfig
+	RedisQueueConfig   RedisQueueConfig
+	InMemQueueConfig   InMemQueueConfig
+	HttpPort           int
+	GrpcPort           int
+	StorageType        StorageType
+	QueueType          QueueType
+	EncoderDecoderType EncoderDecoderType
 }
 
 type RedisStorageConfig struct {
-	Host      string
-	Port      int
+	Addrs     []string
 	Namespace string
 }
 
-type InmemoryStorageConfig struct {
+type RedisQueueConfig struct {
+	Addrs     []string
+	Namespace string
+}
+
+type InmemStorageConfig struct {
+}
+type InMemQueueConfig struct {
 }
