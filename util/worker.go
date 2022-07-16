@@ -1,6 +1,11 @@
 package util
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/mohitkumar/finch/logger"
+	"go.uber.org/zap"
+)
 
 type TaskStop struct{}
 
@@ -8,47 +13,43 @@ type Task interface{}
 
 type Worker struct {
 	name     string
-	sender   chan<- Task
-	receiver <-chan Task
-	closeCh  chan struct{}
+	capacity int
+	stop     chan struct{}
 	wg       *sync.WaitGroup
+	taskChan chan func() error
 }
 
-type TaskHandler interface {
-	Handle(t Task)
-}
-
-func (w *Worker) Start(handler TaskHandler) {
+func (w *Worker) Start() {
 	w.wg.Add(1)
 	go func() {
 		defer w.wg.Done()
 
 		for {
-			Task := <-w.receiver
-			if _, ok := Task.(TaskStop); ok {
+			select {
+			case taskFn := <-w.taskChan:
+				err := taskFn()
+				if err != nil {
+					logger.Error("error in executing task in worker", zap.String("worker", w.name), zap.Any("fn", taskFn))
+				}
+			case <-w.stop:
+				logger.Info("stopping worker", zap.String("worker", w.name))
 				return
 			}
-			handler.Handle(Task)
 		}
 	}()
 }
 
-func (w *Worker) Sender() chan<- Task {
-	return w.sender
-}
-
 func (w *Worker) Stop() {
-	w.sender <- TaskStop{}
+	w.stop <- struct{}{}
 }
 
-const defaultWorkerCapacity = 128
-
-func NewWorker(name string, wg *sync.WaitGroup) *Worker {
-	ch := make(chan Task, defaultWorkerCapacity)
+func NewWorker(name string, wg *sync.WaitGroup, capacity int) *Worker {
+	ch := make(chan func() error, capacity)
+	stop := make(chan struct{})
 	return &Worker{
-		sender:   (chan<- Task)(ch),
-		receiver: (<-chan Task)(ch),
+		taskChan: ch,
 		name:     name,
 		wg:       wg,
+		stop:     stop,
 	}
 }

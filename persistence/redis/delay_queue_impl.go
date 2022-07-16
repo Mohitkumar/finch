@@ -64,7 +64,11 @@ func (rq *redisDelayQueue) Pop(queueName string) ([]string, error) {
 	currentTime := time.Now().UnixMilli()
 	pipe := rq.redisClient.Pipeline()
 
-	zr := pipe.ZRange(ctx, queueName, 0, currentTime)
+	opt := &rd.ZRangeBy{
+		Min: strconv.Itoa(0),
+		Max: strconv.FormatInt(currentTime, 10),
+	}
+	zr := pipe.ZRangeByScore(ctx, queueName, opt)
 	pipe.ZRemRangeByScore(ctx, queueName, strconv.Itoa(0), strconv.FormatInt(currentTime, 10))
 
 	_, err := pipe.Exec(ctx)
@@ -82,6 +86,9 @@ func (rq *redisDelayQueue) Pop(queueName string) ([]string, error) {
 		logger.Error("error while pop from redis list", zap.String("queue", queueName), zap.Error(err))
 
 		return nil, api_v1.StorageLayerError{}
+	}
+	if len(res) == 0 {
+		return nil, api_v1.PollError{QueueName: queueName}
 	}
 	return res, nil
 }
