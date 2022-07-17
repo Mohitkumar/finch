@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
-	"github.com/mohitkumar/finch/util"
+	"github.com/mohitkumar/finch/model"
 	"github.com/oliveagle/jsonpath"
 )
 
@@ -27,7 +26,7 @@ type Action interface {
 	GetName() string
 	GetType() ActionType
 	GetInputParams() map[string]any
-	Execute(wfName string, flowContext *api.FlowContext) error
+	Execute(wfName string, flowContext *model.FlowContext) error
 }
 
 var _ Action = new(baseAction)
@@ -63,12 +62,12 @@ func (ba *baseAction) GetInputParams() map[string]any {
 	return ba.inputParams
 }
 
-func (ba *baseAction) Execute(wfName string, flowContext *api.FlowContext) error {
+func (ba *baseAction) Execute(wfName string, flowContext *model.FlowContext) error {
 	return fmt.Errorf("can not execute")
 }
 
-func (ba *baseAction) ResolveInputParams(flowContext *api.FlowContext) map[string]any {
-	flowData := util.ConvertFromProto(flowContext.Data)
+func (ba *baseAction) ResolveInputParams(flowContext *model.FlowContext) map[string]any {
+	flowData := flowContext.Data
 	data := make(map[string]any)
 	ba.resolveParams(flowData, ba.inputParams, data)
 	return data

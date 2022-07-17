@@ -3,6 +3,7 @@ package action
 import (
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
+	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/util"
 	"google.golang.org/protobuf/proto"
 )
@@ -21,18 +22,19 @@ func NewUserAction(id int, Type ActionType, name string, inputParams map[string]
 	}
 }
 
-func (ua *UserAction) Execute(wfName string, flowContext *api.FlowContext) error {
+func (ua *UserAction) Execute(wfName string, flowContext *model.FlowContext) error {
 	task := &api.Task{
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
 		Data:         util.ConvertToProto(ua.ResolveInputParams(flowContext)),
-		ActionId:     flowContext.CurrentAction,
+		ActionId:     int32(flowContext.CurrentAction),
 	}
 	d, err := proto.Marshal(task)
 	if err != nil {
 		return err
 	}
-	err = ua.container.GetFlowDao().UpdateFlowContextNextAction(wfName, flowContext.Id, flowContext, ua.nextAction)
+	flowContext.NextAction = ua.nextAction
+	err = ua.container.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
 	if err != nil {
 		return err
 	}

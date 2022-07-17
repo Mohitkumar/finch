@@ -3,9 +3,8 @@ package action
 import (
 	"strconv"
 
-	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
-	"github.com/mohitkumar/finch/util"
+	"github.com/mohitkumar/finch/model"
 	"github.com/oliveagle/jsonpath"
 )
 
@@ -26,8 +25,8 @@ func NewSwitchAction(id int, Type ActionType, name string, expression string, ca
 	}
 }
 
-func (d *switchAction) Execute(wfName string, flowContext *api.FlowContext) error {
-	dataMap := util.ConvertFromProto(flowContext.Data)
+func (d *switchAction) Execute(wfName string, flowContext *model.FlowContext) error {
+	dataMap := flowContext.Data
 	expressionValue, err := jsonpath.JsonPathLookup(dataMap, d.expression)
 	if err != nil {
 		return err
@@ -43,7 +42,8 @@ func (d *switchAction) Execute(wfName string, flowContext *api.FlowContext) erro
 	case string:
 		nextAction = d.cases[expValue]
 	}
-	err = d.container.GetFlowDao().UpdateFlowContextNextAction(wfName, flowContext.Id, flowContext, nextAction)
+	flowContext.NextAction = nextAction
+	err = d.container.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
 	if err != nil {
 		return err
 	}

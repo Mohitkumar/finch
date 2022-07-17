@@ -1,6 +1,6 @@
 package model
 
-type FlowContextMessage struct {
+type ActionExecutionRequest struct {
 	WorkflowName string `json:"wfName"`
 	FlowId       string `json:"flowId"`
 	ActionId     int    `json:"actionId"`

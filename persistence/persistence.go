@@ -3,7 +3,6 @@ package persistence
 import (
 	"time"
 
-	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/model"
 )
 
@@ -20,11 +19,9 @@ type WorkflowDao interface {
 
 type FlowDao interface {
 	SaveFlowContext(wfName string, flowId string, flowCtx *model.FlowContext) error
-	CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
-	AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error)
-	GetFlowContext(wfName string, flowId string) (*api.FlowContext, error)
-	UpdateFlowContextNextAction(wfName string, flowId string, flowCtx *api.FlowContext, nextAction int) error
-	UpdateFlowStatus(wfName string, flowId string, flowCtx *api.FlowContext, flowState api.FlowContext_WorkflowState) error
+	CreateAndSaveFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*model.FlowContext, error)
+	AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*model.FlowContext, error)
+	GetFlowContext(wfName string, flowId string) (*model.FlowContext, error)
 }
 
 type Queue interface {

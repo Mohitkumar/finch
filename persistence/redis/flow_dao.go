@@ -10,7 +10,6 @@ import (
 	"github.com/mohitkumar/finch/persistence"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
 const WORKFLOW_KEY string = "WF"
@@ -27,32 +26,32 @@ func NewRedisFlowDao(conf Config) *redisFlowDao {
 		baseDao: *newBaseDao(conf),
 	}
 }
-func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, input map[string]any) (*api.FlowContext, error) {
+func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, input map[string]any) (*model.FlowContext, error) {
 	dataMap := make(map[string]any)
 	dataMap["input"] = input
-	flowCtx := &api.FlowContext{
+	flowCtx := &model.FlowContext{
 		Id:            flowId,
-		WorkflowState: api.FlowContext_RUNNING,
-		CurrentAction: int32(action),
-		Data:          util.ConvertToProto(dataMap),
+		State:         model.RUNNING,
+		CurrentAction: action,
+		Data:          dataMap,
 	}
-	if err := rf.saveFlowContext(wFname, flowId, flowCtx); err != nil {
+	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 
 	return flowCtx, nil
 }
 
-func (rf *redisFlowDao) AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*api.FlowContext, error) {
+func (rf *redisFlowDao) AddActionOutputToFlowContext(wFname string, flowId string, action int, dataMap map[string]any) (*model.FlowContext, error) {
 	flowCtx, err := rf.GetFlowContext(wFname, flowId)
 	if err != nil {
 		return nil, err
 	}
-	data := flowCtx.GetData()
+	data := flowCtx.Data
 	output := make(map[string]any)
 	output["output"] = dataMap
 	data[fmt.Sprintf("%d", action)] = util.ConvertMapToStructPb(output)
-	if err := rf.saveFlowContext(wFname, flowId, flowCtx); err != nil {
+	if err := rf.SaveFlowContext(wFname, flowId, flowCtx); err != nil {
 		return nil, err
 	}
 	return flowCtx, nil
@@ -72,16 +71,7 @@ func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *m
 	return nil
 }
 
-func (rf *redisFlowDao) UpdateFlowContextNextAction(wfName string, flowId string, flowCtx *api.FlowContext, nextAction int) error {
-	flowCtx.NextAction = int32(nextAction)
-	return rf.saveFlowContext(wfName, flowId, flowCtx)
-}
-
-func (rf *redisFlowDao) UpdateFlowStatus(wfName string, flowId string, flowCtx *api.FlowContext, flowState api.FlowContext_WorkflowState) error {
-	flowCtx.WorkflowState = flowState
-	return rf.saveFlowContext(wfName, flowId, flowCtx)
-}
-func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*api.FlowContext, error) {
+func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*model.FlowContext, error) {
 	key := rf.baseDao.getNamespaceKey(WORKFLOW_KEY, wfName)
 	ctx := context.Background()
 	flowCtxStr, err := rf.baseDao.redisClient.HGet(ctx, key, flowId).Result()
@@ -89,8 +79,9 @@ func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*api.FlowC
 		logger.Error("error in getting flow context", zap.String("flowName", wfName), zap.String("flowId", flowId), zap.Error(err))
 		return nil, api.StorageLayerError{}
 	}
-	flowCtx := &api.FlowContext{}
-	if err := proto.Unmarshal([]byte(flowCtxStr), flowCtx); err != nil {
+
+	flowCtx, err := rf.encoderDecoder.Decode([]byte(flowCtxStr))
+	if err != nil {
 		return nil, err
 	}
 	return flowCtx, nil

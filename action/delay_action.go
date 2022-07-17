@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/model"
 )
@@ -25,16 +24,18 @@ func NewDelayAction(id int, Type ActionType, name string, delaySeconds int, next
 		nextAction: nextAction,
 	}
 }
-func (d *delayAction) Execute(wfName string, flowContext *api.FlowContext) error {
-	msg := &model.FlowContextMessage{
+func (d *delayAction) Execute(wfName string, flowContext *model.FlowContext) error {
+	msg := model.ActionExecutionRequest{
 		WorkflowName: wfName,
 		FlowId:       flowContext.Id,
 		ActionId:     d.nextAction,
 	}
+	d.container.ActionExecutionRequestEncDec.Encode(msg)
 	data, _ := json.Marshal(msg)
 	err := d.container.GetDelayQueue().PushWithDelay("delay_action", d.delay, data)
 	if err != nil {
 		return err
 	}
-	return d.container.GetFlowDao().UpdateFlowStatus(wfName, flowContext.Id, flowContext, api.FlowContext_DELAY_WATING)
+	flowContext.State = model.WAITING_DELAY
+	return d.container.GetFlowDao().SaveFlowContext(wfName, flowContext.Id, flowContext)
 }

@@ -9,13 +9,13 @@ import (
 )
 
 type DIContiner struct {
-	initialized              bool
-	wfDao                    persistence.WorkflowDao
-	flowDao                  persistence.FlowDao
-	queue                    persistence.Queue
-	delayQueue               persistence.DelayQueue
-	FlowContextEncDec        util.EncoderDecoder[model.FlowContext]
-	FlowContextMessageEncDec util.EncoderDecoder[model.FlowContextMessage]
+	initialized                  bool
+	wfDao                        persistence.WorkflowDao
+	flowDao                      persistence.FlowDao
+	queue                        persistence.Queue
+	delayQueue                   persistence.DelayQueue
+	FlowContextEncDec            util.EncoderDecoder[model.FlowContext]
+	ActionExecutionRequestEncDec util.EncoderDecoder[model.ActionExecutionRequest]
 }
 
 func (p *DIContiner) setInitialized() {
@@ -56,7 +56,7 @@ func (d *DIContiner) Init(conf config.Config) {
 	case config.PROTO_ENCODER_DECODER:
 	default:
 		d.FlowContextEncDec = util.NewJsonEncoderDecoder[model.FlowContext]()
-		d.FlowContextMessageEncDec = util.NewJsonEncoderDecoder[model.FlowContextMessage]()
+		d.ActionExecutionRequestEncDec = util.NewJsonEncoderDecoder[model.ActionExecutionRequest]()
 	}
 }
 

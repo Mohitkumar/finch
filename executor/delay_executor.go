@@ -1,14 +1,12 @@
 package executor
 
 import (
-	"encoding/json"
 	"sync"
 
 	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/flow"
 	"github.com/mohitkumar/finch/logger"
-	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
 )
@@ -45,8 +43,12 @@ func (ex *DelayExecutor) Start() error {
 			return
 		}
 		for _, r := range res {
-			var msg *model.FlowContextMessage
-			json.Unmarshal([]byte(r), &msg)
+
+			msg, err := ex.container.ActionExecutionRequestEncDec.Decode([]byte(r))
+			if err != nil {
+				logger.Error("can not decode action execution request")
+				continue
+			}
 			wf, err := ex.container.GetWorkflowDao().Get(msg.WorkflowName)
 			if err != nil {
 				logger.Error("workflow not found", zap.String("name", msg.WorkflowName))
