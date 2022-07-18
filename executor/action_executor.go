@@ -80,6 +80,7 @@ func (ex *ActionExecutor) Start() error {
 	}
 	ex.worker = util.NewWorker("action-executor", &ex.WaitGroup, handler, ex.capacity)
 	ex.worker.Start()
+	logger.Info("action executor started")
 	return nil
 }
 

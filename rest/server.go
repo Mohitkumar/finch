@@ -19,13 +19,13 @@ type Server struct {
 	executorService *service.WorkflowExecutionService
 }
 
-func NewServer(httpPort int, container *container.DIContiner) (*Server, error) {
+func NewServer(httpPort int, container *container.DIContiner, executorService *service.WorkflowExecutionService) (*Server, error) {
 
 	s := &Server{
 		HttpPort:        httpPort,
 		router:          mux.NewRouter(),
 		container:       container,
-		executorService: service.NewWorkflowExecutionService(container),
+		executorService: executorService,
 	}
 
 	return s, nil

@@ -29,6 +29,7 @@ func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("storage-impl", "redis", "implementation of underline storage")
 	cmd.Flags().String("queue-impl", "redis", "implementation of underline queue ")
 	cmd.Flags().String("encoder-decoder", "JSON", "encoder decoder used to serialzie data")
+	cmd.Flags().Int("executor-capacity", 512, "action executor capacity")
 	return viper.BindPFlags(cmd.Flags())
 }
 
@@ -55,6 +56,7 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 	c.cfg.StorageType = config.StorageType(viper.GetString("storage-impl"))
 	c.cfg.QueueType = config.QueueType(viper.GetString("queue-impl"))
 	c.cfg.EncoderDecoderType = config.EncoderDecoderType(viper.GetString("encoder-decoder"))
+	c.cfg.ActionExecutorCapacity = viper.GetInt("executor-capacity")
 	return nil
 }
 

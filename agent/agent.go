@@ -7,6 +7,7 @@ import (
 
 	"github.com/mohitkumar/finch/config"
 	"github.com/mohitkumar/finch/container"
+	"github.com/mohitkumar/finch/executor"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/rest"
 	"github.com/mohitkumar/finch/rpc"
@@ -16,14 +17,18 @@ import (
 )
 
 type Agent struct {
-	Config       config.Config
-	diContainer  *container.DIContiner
-	httpServer   *rest.Server
-	grpcServer   *grpc.Server
-	shutdown     bool
-	shutdowns    chan struct{}
-	shutdownLock sync.Mutex
-	wg           sync.WaitGroup
+	Config                   config.Config
+	diContainer              *container.DIContiner
+	httpServer               *rest.Server
+	grpcServer               *grpc.Server
+	delayExecutor            *executor.DelayExecutor
+	actionExecutor           *executor.ActionExecutor
+	actionExecutionService   *service.ActionExecutionService
+	workflowExecutionService *service.WorkflowExecutionService
+	shutdown                 bool
+	shutdowns                chan struct{}
+	shutdownLock             sync.Mutex
+	wg                       sync.WaitGroup
 }
 
 func New(config config.Config) (*Agent, error) {
@@ -33,6 +38,10 @@ func New(config config.Config) (*Agent, error) {
 	}
 	setup := []func() error{
 		a.setupDiContainer,
+		a.setupActionExecutor,
+		a.setupDelayExecutor,
+		a.setupWorkflowExecutionService,
+		a.setupActionExecutorService,
 		a.setupHttpServer,
 		a.setupGrpcServer,
 	}
@@ -50,9 +59,28 @@ func (a *Agent) setupDiContainer() error {
 	return nil
 }
 
+func (a *Agent) setupActionExecutor() error {
+	a.actionExecutor = executor.NewActionExecutor(a.diContainer, a.Config.ActionExecutorCapacity)
+	return a.actionExecutor.Start()
+}
+
+func (a *Agent) setupDelayExecutor() error {
+	a.delayExecutor = executor.NewDelayExecutor(a.diContainer, a.actionExecutor)
+	return a.delayExecutor.Start()
+}
+
+func (a *Agent) setupWorkflowExecutionService() error {
+	a.workflowExecutionService = service.NewWorkflowExecutionService(a.diContainer, a.actionExecutor)
+	return nil
+}
+
+func (a *Agent) setupActionExecutorService() error {
+	a.actionExecutionService = service.NewActionExecutionService(a.diContainer, a.actionExecutor)
+	return nil
+}
 func (a *Agent) setupHttpServer() error {
 	var err error
-	a.httpServer, err = rest.NewServer(a.Config.HttpPort, a.diContainer)
+	a.httpServer, err = rest.NewServer(a.Config.HttpPort, a.diContainer, a.workflowExecutionService)
 	if err != nil {
 		return err
 	}
@@ -61,9 +89,8 @@ func (a *Agent) setupHttpServer() error {
 
 func (a *Agent) setupGrpcServer() error {
 	var err error
-	taskService := service.NewTaskExecutionService(a.diContainer)
 	conf := &rpc.GrpcConfig{
-		TaskService: taskService,
+		TaskService: a.actionExecutionService,
 	}
 	a.grpcServer, err = rpc.NewGrpcServer(conf)
 	if err != nil {

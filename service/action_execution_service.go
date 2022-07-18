@@ -1,30 +1,26 @@
 package service
 
 import (
-	"fmt"
-
 	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
 	"github.com/mohitkumar/finch/executor"
-	"github.com/mohitkumar/finch/flow"
-	"github.com/mohitkumar/finch/logger"
+	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/util"
-	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
 
-type TaskExecutionService struct {
-	container    *container.DIContiner
-	taskExecutor *executor.TaskExecutor
+type ActionExecutionService struct {
+	container      *container.DIContiner
+	actionExecutor *executor.ActionExecutor
 }
 
-func NewTaskExecutionService(container *container.DIContiner) *TaskExecutionService {
-	return &TaskExecutionService{
-		container:    container,
-		taskExecutor: executor.NewTaskExecutor(container),
+func NewActionExecutionService(container *container.DIContiner, actionExecutor *executor.ActionExecutor) *ActionExecutionService {
+	return &ActionExecutionService{
+		container:      container,
+		actionExecutor: actionExecutor,
 	}
 }
-func (ts *TaskExecutionService) Poll(taskName string) (*api.Task, error) {
+func (ts *ActionExecutionService) Poll(taskName string) (*api.Task, error) {
 	data, err := ts.container.GetQueue().Pop(taskName)
 	if err != nil {
 		return nil, err
@@ -37,27 +33,27 @@ func (ts *TaskExecutionService) Poll(taskName string) (*api.Task, error) {
 	return task, nil
 }
 
-func (ts *TaskExecutionService) Push(res *api.TaskResult) error {
+func (ts *ActionExecutionService) Push(res *api.TaskResult) error {
 	return ts.HandleTaskResult(res)
 }
 
-func (s *TaskExecutionService) HandleTaskResult(taskResult *api.TaskResult) error {
+func (s *ActionExecutionService) HandleTaskResult(taskResult *api.TaskResult) error {
 	wfName := taskResult.WorkflowName
 	wfId := taskResult.FlowId
 	data := util.ConvertFromProto(taskResult.Data)
 	switch taskResult.Status {
 	case api.TaskResult_SUCCESS:
-		wf, err := s.container.GetWorkflowDao().Get(wfName)
-		if err != nil {
-			logger.Error("workflow not found", zap.String("name", wfName))
-			return fmt.Errorf("workflow = %s not found", wfName)
-		}
-		flow := flow.Convert(wf, wfId, s.container)
+
 		flowCtx, err := s.container.GetFlowDao().AddActionOutputToFlowContext(wfName, wfId, int(taskResult.ActionId), data)
 		if err != nil {
 			return err
 		}
-		s.taskExecutor.ExecuteAction(wfName, int(flowCtx.NextAction), flow, flowCtx)
+		req := model.ActionExecutionRequest{
+			WorkflowName: wfName,
+			ActionId:     int(flowCtx.NextAction),
+			FlowId:       wfId,
+		}
+		s.actionExecutor.Execute(req)
 	case api.TaskResult_FAIL:
 		//retry logic
 	}

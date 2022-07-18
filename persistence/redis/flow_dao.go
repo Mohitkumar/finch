@@ -21,9 +21,10 @@ type redisFlowDao struct {
 	encoderDecoder util.EncoderDecoder[model.FlowContext]
 }
 
-func NewRedisFlowDao(conf Config) *redisFlowDao {
+func NewRedisFlowDao(conf Config, encoderDecoder util.EncoderDecoder[model.FlowContext]) *redisFlowDao {
 	return &redisFlowDao{
-		baseDao: *newBaseDao(conf),
+		baseDao:        *newBaseDao(conf),
+		encoderDecoder: encoderDecoder,
 	}
 }
 func (rf *redisFlowDao) CreateAndSaveFlowContext(wFname string, flowId string, action int, input map[string]any) (*model.FlowContext, error) {

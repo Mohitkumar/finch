@@ -17,15 +17,16 @@ const JSON_ENCODER_DECODER EncoderDecoderType = "JSON"
 const PROTO_ENCODER_DECODER EncoderDecoderType = "PROTO"
 
 type Config struct {
-	RedisConfig        RedisStorageConfig
-	InMemoryConfig     InmemStorageConfig
-	RedisQueueConfig   RedisQueueConfig
-	InMemQueueConfig   InMemQueueConfig
-	HttpPort           int
-	GrpcPort           int
-	StorageType        StorageType
-	QueueType          QueueType
-	EncoderDecoderType EncoderDecoderType
+	RedisConfig            RedisStorageConfig
+	InMemoryConfig         InmemStorageConfig
+	RedisQueueConfig       RedisQueueConfig
+	InMemQueueConfig       InMemQueueConfig
+	HttpPort               int
+	GrpcPort               int
+	StorageType            StorageType
+	QueueType              QueueType
+	EncoderDecoderType     EncoderDecoderType
+	ActionExecutorCapacity int
 }
 
 type RedisStorageConfig struct {

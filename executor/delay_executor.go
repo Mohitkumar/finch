@@ -5,7 +5,6 @@ import (
 
 	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/container"
-	"github.com/mohitkumar/finch/flow"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/util"
 	"go.uber.org/zap"
@@ -16,15 +15,15 @@ var _ Executor = new(DelayExecutor)
 type DelayExecutor struct {
 	container *container.DIContiner
 	sync.WaitGroup
-	stop         chan struct{}
-	taskExecutor *TaskExecutor
+	stop          chan struct{}
+	actionExector *ActionExecutor
 }
 
-func NewDelayExecutor(container *container.DIContiner) *DelayExecutor {
+func NewDelayExecutor(container *container.DIContiner, actionExector *ActionExecutor) *DelayExecutor {
 	return &DelayExecutor{
-		container:    container,
-		taskExecutor: NewTaskExecutor(container),
-		stop:         make(chan struct{}),
+		container:     container,
+		actionExector: actionExector,
+		stop:          make(chan struct{}),
 	}
 }
 
@@ -49,18 +48,7 @@ func (ex *DelayExecutor) Start() error {
 				logger.Error("can not decode action execution request")
 				continue
 			}
-			wf, err := ex.container.GetWorkflowDao().Get(msg.WorkflowName)
-			if err != nil {
-				logger.Error("workflow not found", zap.String("name", msg.WorkflowName))
-				continue
-			}
-			flow := flow.Convert(wf, msg.FlowId, ex.container)
-			flowCtx, err := ex.container.GetFlowDao().GetFlowContext(wf.Name, flow.Id)
-			if err != nil {
-				logger.Error("flow context not found", zap.String("name", msg.WorkflowName), zap.String("flowId", msg.FlowId))
-				continue
-			}
-			err = ex.taskExecutor.ExecuteAction(wf.Name, msg.ActionId, flow, flowCtx)
+			err = ex.actionExector.Execute(*msg)
 			if err != nil {
 				logger.Error("error in executing workflow", zap.String("wfName", msg.WorkflowName), zap.String("flowId", msg.FlowId))
 				continue
@@ -69,6 +57,7 @@ func (ex *DelayExecutor) Start() error {
 	}
 	tw := util.NewTickWorker(1, ex.stop, fn, &ex.WaitGroup)
 	tw.Start()
+	logger.Info("delay executor started")
 	return nil
 }
 

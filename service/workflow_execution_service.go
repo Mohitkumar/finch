@@ -13,14 +13,14 @@ import (
 )
 
 type WorkflowExecutionService struct {
-	container    *container.DIContiner
-	taskExecutor *executor.TaskExecutor
+	container      *container.DIContiner
+	actionExecutor *executor.ActionExecutor
 }
 
-func NewWorkflowExecutionService(container *container.DIContiner) *WorkflowExecutionService {
+func NewWorkflowExecutionService(container *container.DIContiner, actionExecutor *executor.ActionExecutor) *WorkflowExecutionService {
 	return &WorkflowExecutionService{
-		container:    container,
-		taskExecutor: executor.NewTaskExecutor(container),
+		container:      container,
+		actionExecutor: actionExecutor,
 	}
 }
 func (s *WorkflowExecutionService) StartFlow(name string, input map[string]any) error {
@@ -43,5 +43,10 @@ func (s *WorkflowExecutionService) StartFlow(name string, input map[string]any) 
 		return err
 	}
 	logger.Info("starting workflow", zap.String("workflow", name), zap.Int("rootAction", flow.RootAction))
-	return s.taskExecutor.ExecuteAction(name, flow.RootAction, flow, flowCtx)
+	req := model.ActionExecutionRequest{
+		WorkflowName: name,
+		ActionId:     wf.RootAction,
+		FlowId:       flow.Id,
+	}
+	return s.actionExecutor.Execute(req)
 }

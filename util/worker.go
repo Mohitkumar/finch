@@ -14,7 +14,7 @@ type Worker struct {
 	capacity int
 	stop     chan struct{}
 	wg       *sync.WaitGroup
-	handler  func(any) error
+	handler  func(Task) error
 	taskChan chan Task
 }
 

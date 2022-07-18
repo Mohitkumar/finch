@@ -31,6 +31,14 @@ func NewDiContainer() *DIContiner {
 func (d *DIContiner) Init(conf config.Config) {
 	defer d.setInitialized()
 
+	switch conf.EncoderDecoderType {
+	case config.PROTO_ENCODER_DECODER:
+		//proto
+	default:
+		d.FlowContextEncDec = util.NewJsonEncoderDecoder[model.FlowContext]()
+		d.ActionExecutionRequestEncDec = util.NewJsonEncoderDecoder[model.ActionExecutionRequest]()
+	}
+
 	switch conf.StorageType {
 	case config.STORAGE_TYPE_REDIS:
 		rdConf := &rd.Config{
@@ -38,7 +46,7 @@ func (d *DIContiner) Init(conf config.Config) {
 			Namespace: conf.RedisConfig.Namespace,
 		}
 		d.wfDao = rd.NewRedisWorkflowDao(*rdConf)
-		d.flowDao = rd.NewRedisFlowDao(*rdConf)
+		d.flowDao = rd.NewRedisFlowDao(*rdConf, d.FlowContextEncDec)
 
 	case config.STORAGE_TYPE_INMEM:
 
@@ -52,12 +60,7 @@ func (d *DIContiner) Init(conf config.Config) {
 		d.queue = rd.NewRedisQueue(*rdConf)
 		d.delayQueue = rd.NewRedisDelayQueue(*rdConf)
 	}
-	switch conf.EncoderDecoderType {
-	case config.PROTO_ENCODER_DECODER:
-	default:
-		d.FlowContextEncDec = util.NewJsonEncoderDecoder[model.FlowContext]()
-		d.ActionExecutionRequestEncDec = util.NewJsonEncoderDecoder[model.ActionExecutionRequest]()
-	}
+
 }
 
 func (d *DIContiner) GetWorkflowDao() persistence.WorkflowDao {
