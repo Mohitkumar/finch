@@ -3,22 +3,26 @@ package util
 import (
 	"sync"
 	"time"
+
+	"github.com/mohitkumar/finch/logger"
+	"go.uber.org/zap"
 )
 
 type TickWorker struct {
 	stop         chan struct{}
 	tickInterval int
 	wg           *sync.WaitGroup
-
-	fn func()
+	name         string
+	fn           func()
 }
 
-func NewTickWorker(interval int, stop chan struct{}, fn func(), wg *sync.WaitGroup) *TickWorker {
+func NewTickWorker(name string, interval int, stop chan struct{}, fn func(), wg *sync.WaitGroup) *TickWorker {
 	return &TickWorker{
 		stop:         stop,
 		tickInterval: interval,
 		wg:           wg,
 		fn:           fn,
+		name:         name,
 	}
 }
 
@@ -32,7 +36,7 @@ func (tw *TickWorker) Start() {
 			case <-ticker.C:
 				tw.fn()
 			case <-tw.stop:
-				ticker.Stop()
+				logger.Info("stopping tick worker", zap.String("worker", tw.name))
 				return
 			}
 		}

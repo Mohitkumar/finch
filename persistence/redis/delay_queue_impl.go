@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-redis/redis/v9"
 	rd "github.com/go-redis/redis/v9"
-	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/persistence"
 	"go.uber.org/zap"
@@ -37,7 +36,7 @@ func (rq *redisDelayQueue) Push(queueName string, message []byte) error {
 	err := rq.redisClient.ZAdd(ctx, queueName, member).Err()
 	if err != nil {
 		logger.Error("error while push to redis list", zap.String("queue", queueName), zap.Error(err))
-		return api_v1.StorageLayerError{}
+		return persistence.StorageLayerError{Message: err.Error()}
 	}
 	return nil
 }
@@ -53,7 +52,7 @@ func (rq *redisDelayQueue) PushWithDelay(queueName string, delay time.Duration, 
 	err := rq.redisClient.ZAdd(ctx, queueName, member).Err()
 	if err != nil {
 		logger.Error("error while push to redis list", zap.String("queue", queueName), zap.Error(err))
-		return api_v1.StorageLayerError{}
+		return persistence.StorageLayerError{Message: err.Error()}
 	}
 	return nil
 }
@@ -75,20 +74,20 @@ func (rq *redisDelayQueue) Pop(queueName string) ([]string, error) {
 	if err != nil {
 		logger.Error("error while pop from redis list", zap.String("queue", queueName), zap.Error(err))
 
-		return nil, api_v1.StorageLayerError{}
+		return nil, persistence.StorageLayerError{Message: err.Error()}
 	}
 
 	res, err := zr.Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return nil, api_v1.PollError{QueueName: queueName}
+			return nil, persistence.EmptyQueueError{QueueName: queueName}
 		}
 		logger.Error("error while pop from redis list", zap.String("queue", queueName), zap.Error(err))
 
-		return nil, api_v1.StorageLayerError{}
+		return nil, persistence.StorageLayerError{Message: err.Error()}
 	}
 	if len(res) == 0 {
-		return nil, api_v1.PollError{QueueName: queueName}
+		return nil, persistence.EmptyQueueError{QueueName: queueName}
 	}
 	return res, nil
 }

@@ -1,6 +1,11 @@
 package worker
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/mohitkumar/finch/logger"
+	"go.uber.org/zap"
+)
 
 type workerWithStopChannel struct {
 	worker Worker
@@ -38,7 +43,10 @@ func (tp *TaskPoller) Start() {
 			maxRetryBeforeResultPush: tp.Config.MaxRetryBeforeResultPush,
 			retryIntervalSecond:      tp.Config.RetryIntervalSecond,
 		}
-		pw.Start()
+		err = pw.Start()
+		if err != nil {
+			logger.Error("error starting worker ", zap.String("name", w.worker.GetName()), zap.Error(err))
+		}
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	api_v1 "github.com/mohitkumar/finch/api/v1"
+	"github.com/mohitkumar/finch/persistence"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,8 +17,7 @@ func TestDelayQueue(t *testing.T) {
 	} {
 		t.Run(scenario, func(t *testing.T) {
 			conf := &Config{
-				Host:      "localhost",
-				Port:      6379,
+				Addrs:     []string{"localhost:6379"},
 				Namespace: "test",
 			}
 			queue := NewRedisDelayQueue(*conf)
@@ -39,7 +38,7 @@ func testPushPop(t *testing.T, queue *redisDelayQueue) {
 	require.Equal(t, "test_msg1", res[0])
 
 	_, err = queue.Pop("test-delay")
-	_, ok := err.(api_v1.PollError)
+	_, ok := err.(persistence.EmptyQueueError)
 	require.True(t, ok)
 }
 
@@ -50,13 +49,13 @@ func testPushPopDelay(t *testing.T, queue *redisDelayQueue) {
 	time.Sleep(1 * time.Second)
 	res, err := queue.Pop("test-delay")
 	require.Error(t, err)
-	_, ok := err.(api_v1.PollError)
+	_, ok := err.(persistence.EmptyQueueError)
 	require.True(t, ok)
 
 	time.Sleep(1 * time.Second)
 	res, err = queue.Pop("test-delay")
 	require.Error(t, err)
-	_, ok = err.(api_v1.PollError)
+	_, ok = err.(persistence.EmptyQueueError)
 	require.True(t, ok)
 
 	time.Sleep(4 * time.Second)

@@ -60,12 +60,12 @@ func (a *Agent) setupDiContainer() error {
 }
 
 func (a *Agent) setupActionExecutor() error {
-	a.actionExecutor = executor.NewActionExecutor(a.diContainer, a.Config.ActionExecutorCapacity)
+	a.actionExecutor = executor.NewActionExecutor(a.diContainer, a.Config.ActionExecutorCapacity, &a.wg)
 	return a.actionExecutor.Start()
 }
 
 func (a *Agent) setupDelayExecutor() error {
-	a.delayExecutor = executor.NewDelayExecutor(a.diContainer, a.actionExecutor)
+	a.delayExecutor = executor.NewDelayExecutor(a.diContainer, a.actionExecutor, &a.wg)
 	return a.delayExecutor.Start()
 }
 
@@ -101,34 +101,33 @@ func (a *Agent) setupGrpcServer() error {
 
 func (a *Agent) Start() error {
 	var err error
-	a.wg.Add(2)
 	go func() error {
-		defer a.wg.Done()
 		err = a.httpServer.Start()
 		if err != nil {
-			return err
+			_ = a.Shutdown()
+			panic(err)
 		}
 		return nil
 	}()
 
 	go func() error {
-		defer a.wg.Done()
+		logger.Info("startting grpc server on", zap.Int("port", a.Config.GrpcPort))
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%d", a.Config.GrpcPort))
 		if err != nil {
-			return err
+			panic(err)
 		}
-		logger.Info("startting grpc server on", zap.Int("port", a.Config.GrpcPort))
 
 		if err := a.grpcServer.Serve(lis); err != nil {
-			return err
+			_ = a.Shutdown()
+			panic(err)
 		}
 		return nil
 	}()
-	a.wg.Wait()
 	return nil
 }
 
 func (a *Agent) Shutdown() error {
+	logger.Info("shutting down server")
 	a.shutdownLock.Lock()
 	defer a.shutdownLock.Unlock()
 	if a.shutdown {
@@ -138,8 +137,11 @@ func (a *Agent) Shutdown() error {
 	close(a.shutdowns)
 
 	shutdown := []func() error{
+		a.actionExecutor.Stop,
+		a.delayExecutor.Stop,
 		a.httpServer.Stop,
 		func() error {
+			logger.Info("stopping grpc server")
 			a.grpcServer.GracefulStop()
 			return nil
 		},
@@ -149,5 +151,6 @@ func (a *Agent) Shutdown() error {
 			return err
 		}
 	}
+	a.wg.Wait()
 	return nil
 }

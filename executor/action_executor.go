@@ -19,13 +19,14 @@ type ActionExecutor struct {
 	container *container.DIContiner
 	capacity  int
 	worker    *util.Worker
-	sync.WaitGroup
+	wg        *sync.WaitGroup
 }
 
-func NewActionExecutor(container *container.DIContiner, capacity int) *ActionExecutor {
+func NewActionExecutor(container *container.DIContiner, capacity int, wg *sync.WaitGroup) *ActionExecutor {
 	return &ActionExecutor{
 		container: container,
 		capacity:  capacity,
+		wg:        wg,
 	}
 }
 
@@ -78,7 +79,7 @@ func (ex *ActionExecutor) Start() error {
 		}
 		return nil
 	}
-	ex.worker = util.NewWorker("action-executor", &ex.WaitGroup, handler, ex.capacity)
+	ex.worker = util.NewWorker("action-executor", ex.wg, handler, ex.capacity)
 	ex.worker.Start()
 	logger.Info("action executor started")
 	return nil

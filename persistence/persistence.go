@@ -1,10 +1,27 @@
 package persistence
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mohitkumar/finch/model"
 )
+
+type EmptyQueueError struct {
+	QueueName string
+}
+
+func (e EmptyQueueError) Error() string {
+	return fmt.Sprintf("%s is empty", e.QueueName)
+}
+
+type StorageLayerError struct {
+	Message string
+}
+
+func (e StorageLayerError) Error() string {
+	return fmt.Sprintf("storage layer error %s", e.Message)
+}
 
 const WF_PREFIX string = "WF_"
 const METADATA_CF string = "METADATA_"

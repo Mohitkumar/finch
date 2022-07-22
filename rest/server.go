@@ -1,9 +1,11 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/mohitkumar/finch/container"
@@ -13,8 +15,8 @@ import (
 )
 
 type Server struct {
-	HttpPort        int
-	router          *mux.Router
+	http.Server
+	Port            int
 	container       *container.DIContiner
 	executorService *service.WorkflowExecutionService
 }
@@ -22,29 +24,39 @@ type Server struct {
 func NewServer(httpPort int, container *container.DIContiner, executorService *service.WorkflowExecutionService) (*Server, error) {
 
 	s := &Server{
-		HttpPort:        httpPort,
-		router:          mux.NewRouter(),
+		Server: http.Server{
+			Addr: fmt.Sprintf(":%d", httpPort),
+		},
 		container:       container,
 		executorService: executorService,
+		Port:            httpPort,
 	}
 
+	router := mux.NewRouter()
+	router.HandleFunc("/workflow", s.HandleCreateFlow).Methods(http.MethodPost)
+	router.HandleFunc("/workflow/{name}", s.HandleGetFlow).Methods(http.MethodGet)
+	router.HandleFunc("/flow/execute", s.HandleRunFlow).Methods(http.MethodPost)
+	router.Use(loggingMiddleware)
+	s.Handler = router
 	return s, nil
 }
 
 func (s *Server) Start() error {
-	logger.Info("startting http server on", zap.Int("port", s.HttpPort))
-	s.router.HandleFunc("/workflow", s.HandleCreateFlow).Methods(http.MethodPost)
-	s.router.HandleFunc("/workflow/{name}", s.HandleGetFlow).Methods(http.MethodGet)
-	s.router.HandleFunc("/flow/execute", s.HandleRunFlow).Methods(http.MethodPost)
-	s.router.Use(loggingMiddleware)
-	http.Handle("/", s.router)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", s.HttpPort), s.router); err != nil {
+	logger.Info("startting http server on", zap.Int("port", s.Port))
+	if err := s.ListenAndServe(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (s *Server) Stop() error {
+	logger.Info("stopping http server")
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	err := s.Shutdown(ctx)
+	if err != nil {
+		logger.Error("error shutting down http server")
+	}
 	return nil
 }
 func loggingMiddleware(next http.Handler) http.Handler {

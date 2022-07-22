@@ -6,18 +6,14 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
-make: *** No rule to make target `all'.  Stop.
 
-
-# Make data base, printed on Mon Jul 18 14:47:21 2022
+# Make data base, printed on Fri Jul 22 16:32:12 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
- 
 ?F = $(notdir $?)
 # environment
 ELECTRON_NO_ATTACH_CONSOLE = 1
@@ -54,13 +50,11 @@ PATH = /Users/mohitkumar/apache-maven-3.6.3/bin:/opt/homebrew/opt/mysql@5.7/bin:
 # environment
 GOPATH = /Users/mohitkumar/go
 # environment
-LaunchInstanceID = 54E2D01A-0424-4C31-8D59-70E58DEC0D8B
-# environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.2f3mJbIhfd/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.pMHVXadOQU/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -80,11 +74,11 @@ MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /De
 # environment
 VSCODE_CLI = 1
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/mohitkumar/Library/Application Support/Code/CachedData/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a
+VSCODE_CODE_CACHE_PATH = /Users/mohitkumar/Library/Application Support/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
 # environment
 LOGNAME = mohitkumar
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -106,7 +100,7 @@ USER = mohitkumar
 # makefile
 .DEFAULT_GOAL := compile
 # environment
-TERM_SESSION_ID = 94CBB5BF-7B84-4CE5-9A12-4BCC1CC5DD10
+TERM_SESSION_ID = 3A058E83-16DF-42B6-9CB8-D366E5D8F9DF
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # default
@@ -120,7 +114,7 @@ TMPDIR = /var/folders/yn/ttm_nzgs44v490g6vgz3zq100000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/mohitkumar/Library/Application Support/Code/1.69.1-main.sock
+VSCODE_IPC_HOOK = /Users/mohitkumar/Library/Application Support/Code/1.69.2-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -132,7 +126,7 @@ MFLAGS = -Rrqp
 # environment
 TERM_PROGRAM_VERSION = 443
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.4850891.4850897.FD3A61BF-FC48-4E2A-B40C-5881F6362139
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.5232470.5232476.C08CD726-EAB5-4B20-8C94-BED9BB032171
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -151,8 +145,6 @@ MAKEFILES :=
 <F = $(notdir $<)
 # environment
 LC_ALL = C
-# environment
-SECURITYSESSIONID = 186a4
 # automatic
 ^F = $(notdir $^)
 # default
@@ -164,9 +156,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 52918
+VSCODE_PID = 10052
 # variable set hash-table stats:
-# Load=75/1024=7%, Rehash=0, Collisions=2/98=2%
+# Load=73/1024=7%, Rehash=0, Collisions=2/96=2%
 
 # Pattern-specific Variable Values
 
@@ -185,7 +177,6 @@ VSCODE_PID = 52918
 # Files
 
 # Not a target:
- 
 all:
 #  Command-line target.
 #  Implicit rule search has been done.
@@ -241,6 +232,8 @@ compile:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Jul 18 14:47:21 2022
+# Finished Make data base on Fri Jul 22 16:32:12 2022
 
  
+make: *** No rule to make target `all'.  Stop.
+

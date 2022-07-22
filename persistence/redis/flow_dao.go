@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	api "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/model"
 	"github.com/mohitkumar/finch/persistence"
@@ -67,7 +66,7 @@ func (rf *redisFlowDao) SaveFlowContext(wfName string, flowId string, flowCtx *m
 	}
 	if err := rf.baseDao.redisClient.HSet(ctx, key, []string{flowId, string(data)}).Err(); err != nil {
 		logger.Error("error in saving flow context", zap.String("flowName", wfName), zap.String("flowId", flowId), zap.Error(err))
-		return api.StorageLayerError{}
+		return persistence.StorageLayerError{}
 	}
 	return nil
 }
@@ -78,7 +77,7 @@ func (rf *redisFlowDao) GetFlowContext(wfName string, flowId string) (*model.Flo
 	flowCtxStr, err := rf.baseDao.redisClient.HGet(ctx, key, flowId).Result()
 	if err != nil {
 		logger.Error("error in getting flow context", zap.String("flowName", wfName), zap.String("flowId", flowId), zap.Error(err))
-		return nil, api.StorageLayerError{}
+		return nil, persistence.StorageLayerError{}
 	}
 
 	flowCtx, err := rf.encoderDecoder.Decode([]byte(flowCtxStr))

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/go-redis/redis/v9"
-	api_v1 "github.com/mohitkumar/finch/api/v1"
 	"github.com/mohitkumar/finch/logger"
 	"github.com/mohitkumar/finch/persistence"
 	"go.uber.org/zap"
@@ -29,7 +28,7 @@ func (rq *redisQueue) Push(queueName string, mesage []byte) error {
 	err := rq.redisClient.LPush(ctx, queueName, mesage).Err()
 	if err != nil {
 		logger.Error("error while push to redis list", zap.String("queue", queueName), zap.Error(err))
-		return api_v1.StorageLayerError{}
+		return persistence.StorageLayerError{}
 	}
 	return nil
 }
@@ -41,11 +40,11 @@ func (rq *redisQueue) Pop(queueName string) ([]byte, error) {
 
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return nil, api_v1.PollError{QueueName: queueName}
+			return nil, persistence.EmptyQueueError{QueueName: queueName}
 		}
 		logger.Error("error while pop from redis list", zap.String("queue", queueName), zap.Error(err))
 
-		return nil, api_v1.StorageLayerError{}
+		return nil, persistence.StorageLayerError{}
 	}
 	return []byte(res), nil
 }
