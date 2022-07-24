@@ -1,0 +1,74 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+option go_package="github.com/mohitkumar/api_v1";
+
+message UUID{
+    bytes id = 1;
+}
+
+message FlowContext{
+    UUID id = 1;
+    string name = 2;
+    string currentState =3;
+    uint64 currentAction= 4;
+    map<string,string> data = 5;
+    uint64 ttl = 6;
+}
+
+
+message Flow{
+    string name = 1;
+    uint64 startActionId =2;
+    repeated Action actions = 3;
+    map<string,google.protobuf.Value> data = 5;
+}
+
+message Action{
+    uint64 id = 1;
+    string name = 2;
+    map<string,google.protobuf.Value> inputParameters = 3;
+    repeated ActionNode next = 4;
+}
+
+message ActionNode{
+    uint64 id = 1;
+    string event = 2;
+}
+
+
+message FlowCreateRequest{
+    Flow flow = 1;
+}
+
+message FlowCreateResponse{
+    enum Status{
+        SUCCESS = 0;
+        FAILED = 1;
+    }
+    Status status = 1;
+}
+
+message Server {
+    string id = 1;
+    string rpc_addr = 2;
+    bool is_leader = 3;
+}
+
+message GetServersRequest {}
+
+message GetServersResponse {
+  repeated Server servers = 1;
+}
+
+message FlowGetRequest{
+    string name = 1;
+}
+message FlowGetResponse{
+    Flow flow = 1;
+}
+
+service Coordinator{
+    rpc CreateFlow(FlowCreateRequest) returns (FlowCreateResponse){}
+    rpc GetServers(GetServersRequest) returns (GetServersResponse) {}
+    rpc GetFlow(FlowGetRequest) returns (FlowGetResponse){}
+}

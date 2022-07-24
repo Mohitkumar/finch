@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option go_package="github.com/mohitkumar/api_v1";
+
+message KVItem{
+    bytes key =1;
+    bytes value=2;
+}
